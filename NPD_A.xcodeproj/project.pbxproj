@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		63A8C7B61F0391F800B30567 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63A8C7B51F0391F800B30567 /* main.cpp */; };
 		63A8C7BE1F03921800B30567 /* DQT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63A8C7BC1F03921800B30567 /* DQT.cpp */; };
+		63A8C7C31F0493A900B30567 /* Dataset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63A8C7BF1F0493A900B30567 /* Dataset.cpp */; };
+		63A8C7C41F0493A900B30567 /* Parameter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63A8C7C11F0493A900B30567 /* Parameter.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +30,11 @@
 		63A8C7B51F0391F800B30567 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		63A8C7BC1F03921800B30567 /* DQT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DQT.cpp; sourceTree = "<group>"; };
 		63A8C7BD1F03921800B30567 /* DQT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DQT.h; sourceTree = "<group>"; };
+		63A8C7BF1F0493A900B30567 /* Dataset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dataset.cpp; sourceTree = "<group>"; };
+		63A8C7C01F0493A900B30567 /* Dataset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Dataset.h; sourceTree = "<group>"; };
+		63A8C7C11F0493A900B30567 /* Parameter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Parameter.cpp; sourceTree = "<group>"; };
+		63A8C7C21F0493A900B30567 /* Parameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Parameter.h; sourceTree = "<group>"; };
+		63A8C7C51F0493CA00B30567 /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,9 +67,14 @@
 		63A8C7B41F0391F800B30567 /* NPD_A */ = {
 			isa = PBXGroup;
 			children = (
+				63A8C7BF1F0493A900B30567 /* Dataset.cpp */,
+				63A8C7C01F0493A900B30567 /* Dataset.h */,
+				63A8C7C11F0493A900B30567 /* Parameter.cpp */,
+				63A8C7C21F0493A900B30567 /* Parameter.h */,
 				63A8C7B51F0391F800B30567 /* main.cpp */,
 				63A8C7BC1F03921800B30567 /* DQT.cpp */,
 				63A8C7BD1F03921800B30567 /* DQT.h */,
+				63A8C7C51F0493CA00B30567 /* common.h */,
 			);
 			path = NPD_A;
 			sourceTree = "<group>";
@@ -125,7 +137,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				63A8C7B61F0391F800B30567 /* main.cpp in Sources */,
+				63A8C7C31F0493A900B30567 /* Dataset.cpp in Sources */,
 				63A8C7BE1F03921800B30567 /* DQT.cpp in Sources */,
+				63A8C7C41F0493A900B30567 /* Parameter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

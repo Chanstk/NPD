@@ -7,23 +7,26 @@
 //
 
 #ifndef DQT_h
-#include <stdio.h>
-#include<vector>
+#include "common.h"
+#include "Dataset.h"
 #define DQT_h
 using namespace std;
 
 class Node{
 public:
     float leftFit, rightFit, threshold1, threshold2, score, parentFit;
-    int featId, level;
+    int featId, level, minLeaf;
     vector<int> pInd, nInd;
     Node * lChild, *rChild;
-    void SplitNode(DataSet & dataset);
+    double SplitNode(Dataset & dataset);
+    void Init(float parentFit);
+    double RecurLearn(Dataset & dataset);
 };
 class DQT{
 public:
     Node * root;
+    Node * GetTree(Dataset &dataset);
     void Init();
-    void LearnDQT(DataSet & dataset);
+    void LearnDQT(Dataset & dataset);
 };
 #endif /* DQT_hpp */
