@@ -5,22 +5,28 @@
 //  Created by 陈石涛 on 28/06/2017.
 //  Copyright © 2017 Shitao Chen. All rights reserved.
 //
-#include "DQT.h"
+#include "Adaboost.h"
 extern Parameter para;
 
 void WeightHist(const cv::Mat& X, float* W, vector<int>& index, int n, int count[256], double wHist[256]){
     memset(wHist, 0, 256 * sizeof(double));
     
     for (int j = 0; j < n; j++){
-        unsigned char bin = X.ptr(index[j])[0];//TODO 类型？
+        unsigned char bin = X.ptr(index[j])[0];
         count[bin]++;
         wHist[bin] += W[index[j]];
     }
 }
-void DQT::Init(){
+
+void DQT::Init_tree(vector<int>& pInd,
+          vector<int>& nInd,
+          int minLeaf){
     this->root = new Node();
-    //TOOD 装入正负样本索引
-    root->Init(0);
+    for(int i = 0; i < pInd.size(); i++)
+        root->pInd.push_back(pInd[i]);
+    for(int i = 0; i < nInd.size(); i++)
+        root->pInd.push_back(nInd[i]);
+    root->Init(0, minLeaf);
     root->level = 1;
 }
 
@@ -142,10 +148,10 @@ double Node::RecurLearn(Dataset & dataset){
     //左右子树初始化
     Node* lChild = new Node();
     Node* rChild = new Node();
-    //TODO fit?
-    lChild->Init(this->leftFit);
+    
+    lChild->Init(this->leftFit, minLeaf);
     lChild->level = this->level + 1;
-    rChild->Init(this->rightFit);
+    rChild->Init(this->rightFit, minLeaf);
     rChild->level = this->level + 1;
     
     //正样本分入左右子树
@@ -166,43 +172,88 @@ double Node::RecurLearn(Dataset & dataset){
     double minCost1 = lChild->RecurLearn(dataset);
     double minCost2 = rChild->RecurLearn(dataset);
     
-    //本节点为叶节点
-    if(lChild->threshold1== -1 && rChild->threshold1 == -1)
+    //本节点无左右子树
+    if(lChild->threshold1 == -1 && rChild->threshold1 == -1){
+        delete lChild;
+        delete rChild;
         return minCost;
-        
-    //左右子树minCost之和大于本节点
-    if (minCost1 + minCost2 >= minCost)
+    }
+    //左右子树minCost之和大于本节点,丢弃左右子树
+    if (minCost1 + minCost2 >= minCost){
+        delete lChild;
+        delete rChild;
         return minCost;
+    }
     
     minCost = minCost1 + minCost2;
-    //TODO
-    //左子树为空
     
-    //左子树不为空
-    
-    //右子树为空
-    
-    //右子树不为空
-    
-        
-        
+    this->lChild = lChild;
+    this->rChild = rChild;
     return minCost;
 }
 
 void DQT::LearnDQT(Dataset &dataset){
-    double minCost = this->root->RecurLearn(dataset);
+    this->root->RecurLearn(dataset);
 }
 
-Node * DQT::GetTree(Dataset &dataset){
-    this->Init();
+void DQT::CreateTree(Dataset &dataset,vector<int>& pInd, vector<int> &nInd
+                    int minLeaf){
+    this->Init_tree(pInd, nInd, minLeaf);
     this->LearnDQT(dataset);
-    return this->root;
+}
+void DQT::ReleaseSpace(Node *node){
+    if(node->lChild == NULL && node->rChild == NULL){
+        delete node;
+        return ;
+    }
+    if(node->lChild ==NULL){
+        return ReleaseSpace(node->rChild);
+    }
+    if(node->rChild ==NULL){
+        return ReleaseSpace(node->lChild);
+    }
+    delete node;
+    return ;
 }
 
-void Node::Init(float parentFit){
+void Node::Init(float parentFit, int minLeaf_){
     this->parentFit = parentFit;
     featId = -1;
     threshold1 = -1;
     threshold2 = -1;
-    minLeaf = para.minLeaf;
+    minLeaf = minLeaf_;
+    lChild = NULL;
+    rChild = NULL;
+}
+
+//posFx 的值是前n个分类器输出之和
+void DQT::CalcuThreshold(Dataset &dataset){
+    vector<double> v;
+    for (int i = 0; i < int(dataset.nPos); i++) {
+        dataset.posFit[dataset.pInd[i]] += this->TestMyself(dataset.pSam.row(dataset.pInd[i]))
+        v.push_back(dataset.posFit[dataset.pInd[i]]);
+    }
+    sort(v.begin(), v.end());
+    int index = max((int)floor(dataset.nPos*(1- para.MINDR)), 0)
+    this->threshold = v[index];
+}
+
+double DQT::RecurTest(const cv::Mat& x, Node * node){
+    unsigned char * ptr = x.data
+    if(ptr[node->featID] < node->threshold1 || ptr[node->featID] > node->threshold1){
+        if(node->lchild == NULL)
+            return node->leftFit;
+        else
+            return RecurTest(x, node->lChild);
+    }
+    else{
+        if(node->rchild == NULL)
+            return node->rightFit;
+        else
+            return RecurTest(x, node->rChild);
+    }
+}
+
+double DQT::TestMyself(const cv::Mat& x){
+    return RecurTest(x, this->root);
 }

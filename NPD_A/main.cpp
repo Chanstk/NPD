@@ -7,9 +7,10 @@
 //
 #include "common.h"
 #include <iostream>
-extern Parameter para;
 int main(int argc, const char * argv[]) {
     // insert code here...
+    
+    extern Parameter para();
     std::cout << "Hello, World!\n";
     return 0;
 }

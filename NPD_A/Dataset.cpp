@@ -2,7 +2,8 @@
 #include"Dataset.h"
 using namespace std;
 using namespace cv;
-
+typedef unsigned char  uchar;
+extern Parameter para;
 Dataset::Dataset(char *pf, char *nf):npdTable(256, 256, 1)
 {
 	nPos = 0;
@@ -59,15 +60,115 @@ void Dataset::calculateFea(Mat& sam, const vector<Mat>& images, const int& num)
 	return ;
 }
 
-void Dataset::initWeight(const int& num, float *weight)
+void Dataset::initWeight(int nPos, int nNeg)
 {
-	weight = new float[num];
-	for (int i = 0; i < num; i++) {
-		weight[i] = 0.5 / num;
-	}
-	return ;
+    posFit.clear();
+    negFit.clear();
+    this->pweight = new float[nPos];
+    this->nweight = new float[nNeg];
+    pInd.clear();
+    for(int i = 0; i < nPos; i++){
+        pweight[i] = ((float)1.0)/ nPos;
+        pInd.push_back(i);
+        posFit.push_back(0);
+    }
+    
+    for(int i = 0; i < nNeg; i++){
+        nweight[i] = ((float)1.0)/ nNeg;
+        nInd.push_back(i);
+        negFit.push_back(0);
+    }
 }
 
+void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &dataset){
+    vector<int> trimedPosIndex;
+    vector<int> posIndexSort(posIndex);
+    //TODO
+    IndexSort(posIndexSort, posW);
+    
+    double cumsum = 0;
+    int k = 0;
+    for (int i = 0; i < int(posIndexSort.size()); i++) {
+        cumsum += dataset.pweight[posIndexSort[i]];
+        if (cumsum >= para.trimFrac) {
+            k = i;
+            break;
+        }
+    }
+    k = min(k, posIndex.size() - para.minSamples);
+    
+    double trimWeight = dataset.pweight[posIndexSort[k]];
+    
+    for (int i = 0; i < int(posIndex.size()); i++) {
+        if (dataset.pweight[posIndex[i]] >= trimWeight)
+            trimedPosIndex.push_back(posIndex[i]);
+    }
+    posIndex.clear();
+    for(int i = 0; i <(int)trimedPosIndex.size(); i++ )
+        posIndex.push_back(trimedPosIndex[i]);
+    
+    //trim neg weight
+    vector<int> trimedNegIndex;
+    vector<int> negIndexSort(negIndex);
+    //TODO
+    IndexSort(negIndexSort, negW);
+    
+    cumsum = 0;
+    //int k;
+    for (int i = 0; i < int(negIndexSort); i++) {
+        cumsum += dataset.nweight[negIndexSort[i]];
+        if (cumsum >= para.trimFrac) {
+            k = i;
+            break;
+        }
+    }
+    k = min(k, negIndex.size() - minSamples);
+    
+    trimWeight = dataset.nweight[negIndexSort[k]];
+    
+    for (int i = 0; i < int(negIndex.size()); i++) {
+        if (dataset.nweight[negIndex[i]] >= trimWeight)
+            trimedNegIndex.push_back(negIndex[i]);
+    }
+    negIndex.clear();
+    for(int i = 0; i <(int)trimedNegIndex.size(); i++ )
+        negIndex.push_back(trimedNegIndex[i]);
+}
+
+void Dataset::CalcuWeight(){
+    int n = this->posFit.size();
+    double sum = 0;
+    for (int i = 0; i < n; i++) {
+        pweight[this->pInd[i]] = min(exp(-1 * this->posFit[i]), para.maxWeight);
+        sum += pweight[this->pInd[i]];
+    }
+    if (sum == 0) {
+        for (int i = 0; i < n; i++) {
+            pweight[this->pInd[i]] = 1./n;
+        }
+    }
+    else{
+        for (int i = 0; i < n; i++) {
+            pweight[this->pInd[i]] /= sum;
+        }
+    }
+    n = this->negFit.size();
+    sum = 0;
+    for (int i = 0; i < n; i++) {
+        nweight[this->nInd[i]] = min(exp(1 * this->negFit[i]), para.maxWeight);
+        sum += nweight[this->nInd[i]];
+    }
+    if (sum == 0) {
+        for (int i = 0; i < n; i++) {
+            nweight[this->nInd[i]] = 1./n;
+        }
+    }
+    else{
+        for (int i = 0; i < n; i++) {
+            nweight[this->nInd[i]] /= sum;
+        }
+    }
+}
 void Dataset::initSamples()
 {
 	calculateNpdTable();
