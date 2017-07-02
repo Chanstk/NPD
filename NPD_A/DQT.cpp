@@ -7,7 +7,6 @@
 //
 #include "Adaboost.h"
 extern Parameter para;
-
 void WeightHist(const cv::Mat& X, float* W, vector<int>& index, int n, int count[256], double wHist[256]){
     memset(wHist, 0, 256 * sizeof(double));
     
@@ -31,9 +30,10 @@ void DQT::Init_tree(vector<int>& pInd,
 }
 
 double Node::SplitNode(Dataset &dataset){
-    double w;
-    int nPos = pInd.size();
-    int nNeg = nInd.size();
+    
+    int nPos = (int)pInd.size();
+    int nNeg = (int)nInd.size();
+    double w = 0.0;
     
     for(int i = 0; i < nPos; i++)
         w += dataset.pweight[pInd[i]];
@@ -196,7 +196,7 @@ void DQT::LearnDQT(Dataset &dataset){
     this->root->RecurLearn(dataset);
 }
 
-void DQT::CreateTree(Dataset &dataset,vector<int>& pInd, vector<int> &nInd
+void DQT::CreateTree(Dataset &dataset,vector<int>& pInd, vector<int> &nInd,
                     int minLeaf){
     this->Init_tree(pInd, nInd, minLeaf);
     this->LearnDQT(dataset);
@@ -230,24 +230,24 @@ void Node::Init(float parentFit, int minLeaf_){
 void DQT::CalcuThreshold(Dataset &dataset){
     vector<double> v;
     for (int i = 0; i < int(dataset.nPos); i++) {
-        dataset.posFit[dataset.pInd[i]] += this->TestMyself(dataset.pSam.row(dataset.pInd[i]))
+        dataset.posFit[dataset.pInd[i]] += this->TestMyself(dataset.pSam.row(dataset.pInd[i]));
         v.push_back(dataset.posFit[dataset.pInd[i]]);
     }
     sort(v.begin(), v.end());
-    int index = max((int)floor(dataset.nPos*(1- para.MINDR)), 0)
+    int index = max((int)floor(dataset.nPos*(1- para.MINDR)), 0);
     this->threshold = v[index];
 }
 
 double DQT::RecurTest(const cv::Mat& x, Node * node){
-    unsigned char * ptr = x.data
-    if(ptr[node->featID] < node->threshold1 || ptr[node->featID] > node->threshold1){
-        if(node->lchild == NULL)
+    unsigned char * ptr = x.data;
+    if(ptr[node->featId] < node->threshold1 || ptr[node->featId] > node->threshold1){
+        if(node->lChild == NULL)
             return node->leftFit;
         else
             return RecurTest(x, node->lChild);
     }
     else{
-        if(node->rchild == NULL)
+        if(node->rChild == NULL)
             return node->rightFit;
         else
             return RecurTest(x, node->rChild);

@@ -11,15 +11,6 @@
 #include "Dataset.h"
 #define Adaboost_hpp
 using namespace std;
-class Adaboost{
-public:
-    vector<*DQT> weakClassifier;
-    void TrainFaceDector(Dataset & dataset);
-    void LearnAdaboost(Dataset & dataset);
-    void TestAdaboost(vector<double>& Fx, vector<int>& passCount, cv::Mat& X);
-};
-
-
 class Node{
 public:
     float leftFit, rightFit, threshold1, threshold2, score, parentFit;
@@ -31,17 +22,16 @@ public:
     double RecurLearn(Dataset & dataset);
 };
 
-
 class DQT{
 public:
     float threshold;
     float FAR;
     Node * root;
-    void CreateTree(Dataset &dataset,vector<int>& pInd, vector<int> &nInd
-               int minLeaf)
+    void CreateTree(Dataset &dataset,vector<int>& pInd, vector<int> &nInd,
+                    int minLeaf);
     void Init_tree(vector<int>& pInd,
-              vector<int>& nInd,
-              int minLeaf);
+                   vector<int>& nInd,
+                   int minLeaf);
     void LearnDQT(Dataset & dataset);
     void ReleaseSpace(Node *node);
     void CalcuThreshold(Dataset &dataset);
@@ -51,4 +41,16 @@ public:
     void CaucultNode();
     
 };
+
+class Adaboost{
+public:
+    vector<DQT*> weakClassifier;
+    void TrainFaceDector(Dataset & dataset);
+    void LearnAdaboost(Dataset & dataset);
+    void TestAdaboost(vector<double>& Fx, vector<int>& passCount, cv::Mat& X);
+};
+
+
+
+
 #endif /* Adaboost_hpp */

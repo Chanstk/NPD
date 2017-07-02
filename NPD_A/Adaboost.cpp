@@ -11,7 +11,6 @@ using namespace std;
 extern Parameter para;
 vector<int> *s_index;
 vector<double> *s_content;
-
 bool IndexSorterCompareUp(int i, int j) {
     return ((s_content->at(i)) < (s_content->at(j)));
 }
@@ -76,7 +75,7 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
         
         double far = 1;
         for (int i = 0; i < int(weakClassifier.size()); i++) {
-            far *= weakClassifier[i].FAR;
+            far *= weakClassifier[i]->FAR;
         }
         cout<<"Weak classifier " << T <<" FAR: "<<far;
         
@@ -99,9 +98,9 @@ void Adaboost::TestAdaboost(vector<double>& Fx, vector<int>& passCount, cv::Mat&
         
         for (int j = 0; j < int(weakClassifier.size()) && run; j++) {	//for each weak classifier
             
-            double fx = weakClassifier[j].TestMyself(X.row(i));
+            double fx = weakClassifier[j]->TestMyself(X.row(i));
             Fx[i] += fx;
-            if (Fx[i] >= weakClassifier[j].threshold) {
+            if (Fx[i] >= weakClassifier[j]->threshold) {
                 passCount[i]++;
             }
             else {
@@ -213,7 +212,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         
         double FAR = 1;
         for (int i = 0; i < weakClassifier.size(); i++)
-            FAR *= weakClassifier[i].FAR;
+            FAR *= weakClassifier[i]->FAR;
         
         cout<<"FAR at " <<t<<" stage is "<<FAR * 100<<"%"<<endl;
         if (FAR <= para.MAXFAR) {

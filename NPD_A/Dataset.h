@@ -13,6 +13,8 @@ public:
     vector<int> pInd, nInd;
 	float *pweight;
 	float *nweight;
+    int lengthOfPosW;
+    int lengthOfNegW;
     vector<double> posFit;
     vector<double> negFit;
 	char *pfile;

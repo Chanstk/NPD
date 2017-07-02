@@ -7,16 +7,10 @@ void Parameter::paraDefine(){
     max_stage = 200;
     obj_size = 20;
     finalNegs = 100;
-     minSamples = 1000;
-     negRatio = 1;
-     windSize = 20;
-    // minimal fraction of negative samples required to remain,
-    
-    // w.r.t.the total number of negative samples.This is a signal of
-    // requiring new negative sample bootstrapping.Also used to avoid
-    // overfitting.
+    minSamples = 1000;
+    negRatio = 1;
+    windSize = 20;
     minNegRatio = 1;
-    
     trimFrac = 0.05;		// weight trimming in AdaBoost
     samFrac = 1.0;			// the fraction of samples randomly selected in each iteration
     // for training; could be used to avoid overfitting.

@@ -19,6 +19,6 @@
 #include<opencv2/imgproc/imgproc.hpp>
 #define common_h
 typedef unsigned char uchar;
-
+using namespace std;
 void IndexSort(vector<int>& _index, vector<double>& _content, int direction = 1);
 #endif /* common_h */

@@ -2,6 +2,8 @@
 #include"Dataset.h"
 using namespace std;
 using namespace cv;
+#define CHEN_MIN(i,j)   (((i) > (j)) ? (j) : (i))
+#define CHEN_MAX(i,j)   (((i) < (j)) ? (j) : (i))
 typedef unsigned char  uchar;
 extern Parameter para;
 Dataset::Dataset(char *pf, char *nf, char *bf):npdTable(256, 256, 1)
@@ -30,7 +32,7 @@ void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName
         num_of_sams++;
         if (image.cols != para.windSize || image.rows != para.windSize)
         {
-            cv::resize(image, image, cv::Size(objSize, objSize));
+            cv::resize(image, image, cv::Size(para.windSize, para.windSize));
         }
         
         images.push_back(image);
@@ -78,6 +80,8 @@ void Dataset::initWeight(int nPos, int nNeg)
     negFit.clear();
     this->pweight = new float[nPos];
     this->nweight = new float[nNeg];
+    lengthOfPosW = nPos;
+    lengthOfNegW = nNeg;
     pInd.clear();
     for(int i = 0; i < nPos; i++){
         pweight[i] = ((float)1.0)/ nPos;
@@ -95,6 +99,9 @@ void Dataset::initWeight(int nPos, int nNeg)
 void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &dataset){
     vector<int> trimedPosIndex;
     vector<int> posIndexSort(posIndex);
+    vector<double> posW;
+    for(int i = 0; i < dataset.lengthOfPosW; i++)
+        posW.push_back(pweight[i]);
     //TODO
     IndexSort(posIndexSort, posW);
     
@@ -107,7 +114,7 @@ void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &
             break;
         }
     }
-    k = min(k, posIndex.size() - para.minSamples);
+    k = CHEN_MIN(k, posIndex.size() - para.minSamples);
     
     double trimWeight = dataset.pweight[posIndexSort[k]];
     
@@ -122,19 +129,22 @@ void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &
     //trim neg weight
     vector<int> trimedNegIndex;
     vector<int> negIndexSort(negIndex);
+    vector<double> negW;
+    for(int i = 0; i < dataset.lengthOfNegW; i++)
+        negW.push_back(nweight[i]);
     //TODO
     IndexSort(negIndexSort, negW);
     
     cumsum = 0;
     //int k;
-    for (int i = 0; i < int(negIndexSort); i++) {
+    for (int i = 0; i < int(negIndexSort.size()); i++) {
         cumsum += dataset.nweight[negIndexSort[i]];
         if (cumsum >= para.trimFrac) {
             k = i;
             break;
         }
     }
-    k = min(k, negIndex.size() - minSamples);
+    k = CHEN_MIN(k, negIndex.size() - para.minSamples);
     
     trimWeight = dataset.nweight[negIndexSort[k]];
     
@@ -189,6 +199,7 @@ void Dataset::AddNegSam(int numOfSam){
     }
     float a = nInd.size();
     int count = 0;
+    int pixels = para.windSize * para.windSize;
     vector<int> formNInd(nInd);
     for(int i = 0; i < nInd.size() + numOfSam; i++){
         if(find(nInd.begin(), nInd.end(), i)!= nInd.end()){
@@ -207,11 +218,12 @@ void Dataset::AddNegSam(int numOfSam){
             nInd.push_back(i);
             nNeg++;
             nweight[i] = (float)1 / a;
-            }
+
         }
         if(bootStrapImages.size() == 0){
             cout<<"not enough images for bootstrap"<<endl;
             break;
+        }
     }
     for(int i = 0; i < formNInd.size(); i++)
         nweight[formNInd[i]] = a / (a + count);

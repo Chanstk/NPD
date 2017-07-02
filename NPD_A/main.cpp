@@ -8,14 +8,14 @@
 #include "common.h"
 #include "Dataset.h"
 #include "Adaboost.h"
+extern Parameter para;
 int main(int argc, const char * argv[]) {
     // insert code here...
-    extern Parameter para();
     para.paraDefine();
-    Dataset dataset();
+    Dataset dataset("pos.txt", "neg.txt", "boot.txt");
     dataset.initSamples();
-    Adaboost adaboost = new Adaboost();
-    adaboost->TrainFaceDector(dataset());
-    std::cout << "Hello, World!\n";
+//    Adaboost adaboost = new Adaboost();
+//    adaboost->TrainFaceDector(dataset());
+    
     return 0;
 }
