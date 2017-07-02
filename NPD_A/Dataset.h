@@ -9,6 +9,7 @@ public:
 	Mat nSam;
 	int nPos;
 	int nNeg;
+    int bootNum;
     vector<int> pInd, nInd;
 	float *pweight;
 	float *nweight;
@@ -16,16 +17,18 @@ public:
     vector<double> negFit;
 	char *pfile;
 	char *nfile;
-	vector<Mat> p_images, n_images;
+    char *bootFile;
+	vector<Mat> p_images, n_images, bootStrapImages;
 	Mat npdTable;
 	public:
-	Dataset(char*, char*);
+	Dataset(char*, char*, char*);
 	void readImage(vector<Mat>&, int, char*);
 	void calculateFea(Mat&, const vector<Mat>&, const int&);
 	void calculateNpdTable();
 	void initWeight(int nPos, int nNeg);
 	void initSamples();
     void CalcuWeight();
+    void AddNegSam(int numOfSam);
     void TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &dataset);
 };
 #endif

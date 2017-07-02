@@ -11,6 +11,7 @@ class Parameter {
     int finalNegs;
     int minSamples;
     float negRatio;
+    int windSize;
     // minimal fraction of negative samples required to remain,
     
     // w.r.t.the total number of negative samples.This is a signal of
@@ -27,5 +28,7 @@ class Parameter {
     double	maxWeight ;		// maximal sample weight in AdaBoost; used to ensure numerical stability.
     int		numThreads;		// the number of computing threads in tree learning
 	Parameter(const float&, const float&, const int&, const int&, const int&, const int &);
+    Parameter();
+    void paraDefine();
 };
 #endif

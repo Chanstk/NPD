@@ -42,8 +42,14 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
     int numFaces = dataset.nPos;
     int desiredNumNegs = numFaces * para.negRatio;
     while(true){
+        //TOOD
         //负样本bootstrap
+        int needNumNegs = desiredNumNegs - dataset.nNeg;
+        if(needNumNegs > 0)
+            dataset.AddNegSam(needNumNegs);
         //负样本不够，退出
+        if(dataset.nNeg < para.finalNegs)
+            break;
         int T = weakClassifier.size();
         if(dataset.nNeg < para.finalNegs){
             printf("\n\nNo enough negative examples to bootstrap (nNeg=%d). The detector training is terminated.\n", dataset.nNeg);
@@ -62,6 +68,7 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
             cout<<("\n\nNo effective features for further detector learning.\n");
             break;
         }
+        
         T = weakClassifier.size();
         
         //保存模型

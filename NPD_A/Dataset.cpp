@@ -4,29 +4,40 @@ using namespace std;
 using namespace cv;
 typedef unsigned char  uchar;
 extern Parameter para;
-Dataset::Dataset(char *pf, char *nf):npdTable(256, 256, 1)
+Dataset::Dataset(char *pf, char *nf, char *bf):npdTable(256, 256, 1)
 {
 	nPos = 0;
 	nNeg = 0;
 	pfile = pf;
 	pfile = nf;
-	p_images.reserve(10000);
-	n_images.reserve(20000);
+    bootFile = bf;
 	return ;
 }
 
-void Dataset::readImage(vector<Mat>& images, int num_of_sams, char *file)
+void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName)
 {
-	ifstream inf(file);
-	string name;
-	while(getline(inf, name)) {
-		num_of_sams++;
-		Mat gray = imread(name.c_str(), CV_LOAD_IMAGE_GRAYSCALE);
-		images.push_back(gray);
-	}
-	inf.close();
-
-	return ;
+    num_of_sams = 0;
+    ifstream file(fileName);
+    string imageName;
+    while (getline(file, imageName))
+    {
+        cv::Mat image = cv::imread(imageName.c_str(),0);
+        if(image.empty())
+        {
+            printf("empty file path:%s\n", imageName.c_str());
+            continue;
+        }
+        num_of_sams++;
+        if (image.cols != para.windSize || image.rows != para.windSize)
+        {
+            cv::resize(image, image, cv::Size(objSize, objSize));
+        }
+        
+        images.push_back(image);
+    }
+    file.close();
+    printf("done\n");
+    return;
 }
 
 void Dataset::calculateNpdTable()
@@ -46,12 +57,13 @@ void Dataset::calculateNpdTable()
 
 void Dataset::calculateFea(Mat& sam, const vector<Mat>& images, const int& num)
 {
-	int pixels = 400;  //20 * 20;
+	int pixels = para.windSize * para.windSize;  //20 * 20;
 	for (int k = 0; k < num; k++) {
 		int n = 0;
 		uchar* addr = (images[k]).data;
 		for (int i = 0; i < pixels; i++) {
-			addr = images[i].data + i;
+            //TODO
+			addr = images[k].data + i;
 			for (int j = i + 1; j < pixels; j++) {
 				sam.at<uchar>(k, n++) = npdTable.at<uchar>(*addr, *(addr - i + j));
 			}
@@ -169,14 +181,58 @@ void Dataset::CalcuWeight(){
         }
     }
 }
+
+void Dataset::AddNegSam(int numOfSam){
+    if(bootStrapImages.size() == 0){
+        cout<<"not enough images for bootstrap"<<endl;
+        return;
+    }
+    float a = nInd.size();
+    int count = 0;
+    vector<int> formNInd(nInd);
+    for(int i = 0; i < nInd.size() + numOfSam; i++){
+        if(find(nInd.begin(), nInd.end(), i)!= nInd.end()){
+            //替换原有负样本
+            count++;
+            int n = 0;
+            uchar* addr = (bootStrapImages[0]).data;
+            for (int k = 0; k < pixels; k++) {
+                //TODO
+                addr = bootStrapImages[0].data + k;
+                for (int j = k + 1; j < pixels; j++) {
+                    nSam.at<uchar>(i, n++) = npdTable.at<uchar>(*addr, *(addr - k + j));
+                }
+            }
+            bootStrapImages.erase(bootStrapImages.begin());
+            nInd.push_back(i);
+            nNeg++;
+            nweight[i] = (float)1 / a;
+            }
+        }
+        if(bootStrapImages.size() == 0){
+            cout<<"not enough images for bootstrap"<<endl;
+            break;
+    }
+    for(int i = 0; i < formNInd.size(); i++)
+        nweight[formNInd[i]] = a / (a + count);
+    float sum = 0;
+    for(int i = 0; i < nInd.size(); i++)
+        sum += nweight[nInd[i]];
+    for(int i = 0; i < nInd.size(); i++)
+        nweight[nInd[i]] /= sum;
+    cout<<"Done"<<endl;
+    return;
+    
+}
 void Dataset::initSamples()
 {
 	calculateNpdTable();
 	readImage(p_images, nPos, pfile);
 	readImage(n_images, nNeg, nfile);
+    readImage(bootStrapImages, bootNum, bootFile);
 	calculateFea(pSam, p_images, nPos);
-	calculateFea(nSam, n_images, nNeg);
-	initWeight(nPos, pweight);
-	initWeight(nNeg, nweight);
+    calculateFea(nSam, n_images, nNeg);
+//	initWeight(nPos, pweight);
+//	initWeight(nNeg, nweight);
 	return ;
 }
