@@ -1,4 +1,5 @@
 #ifndef PARAMETER_H
+#include <iostream>
 #define PARAMETER_H
 
 class Parameter {
@@ -18,7 +19,8 @@ class Parameter {
     // requiring new negative sample bootstrapping.Also used to avoid
     // overfitting.
     double	minNegRatio;
-    
+    int bootNum;
+    int numPosSample;
     double	trimFrac;		// weight trimming in AdaBoost
     double	samFrac;			// the fraction of samples randomly selected in each iteration
     // for training; could be used to avoid overfitting.
@@ -27,8 +29,7 @@ class Parameter {
     int	minLeaf;			// minimal samples required in each leaf node.This is used to avoid overfitting.
     double	maxWeight ;		// maximal sample weight in AdaBoost; used to ensure numerical stability.
     int		numThreads;		// the number of computing threads in tree learning
-	Parameter(const float&, const float&, const int&, const int&, const int&, const int &);
-    Parameter();
+    Parameter(){};
     void paraDefine();
 };
 #endif

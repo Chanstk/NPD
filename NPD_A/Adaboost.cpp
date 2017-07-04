@@ -49,7 +49,7 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
         //负样本不够，退出
         if(dataset.nNeg < para.finalNegs)
             break;
-        int T = weakClassifier.size();
+        T = (int)weakClassifier.size();
         if(dataset.nNeg < para.finalNegs){
             printf("\n\nNo enough negative examples to bootstrap (nNeg=%d). The detector training is terminated.\n", dataset.nNeg);
             break;
@@ -68,7 +68,7 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
             break;
         }
         
-        T = weakClassifier.size();
+        T = (int)weakClassifier.size();
         
         //保存模型
         
@@ -87,7 +87,6 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
 }
 void Adaboost::TestAdaboost(vector<double>& Fx, vector<int>& passCount, cv::Mat& X){
     int n = X.rows;
-    
     Fx.clear();
     passCount.clear();
     Fx.resize(n);
@@ -115,7 +114,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
     
     vector<double> posFit, negFit;
     vector<int> passCount;
-    int T = weakClassifier.size();
+    int T = (int)weakClassifier.size();
     if(T){
         cout<<"Test current model"<<endl;
         //测试样本， datase里面将未经过测试的样本剔除
@@ -130,7 +129,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
                 dataset.posFit.push_back(posFit[i]);
             }
         }
-        dataset.nPos = dataset.pInd.size();
+        dataset.nPos = (int)dataset.pInd.size();
         if (dataset.pInd.size() < nPos) {
             cout << "Warning: some positive samples cannot pass all stages. pass rate is "
             << ((dataset.pInd.size())/(double)(nPos)) << endl;
@@ -146,7 +145,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
                 dataset.negFit.push_back(negFit[i]);
             }
         }
-        dataset.nNeg = dataset.nInd.size();
+        dataset.nNeg = (int)dataset.nInd.size();
         if (nNeg > dataset.nInd.size()) {
             cout << "Warning: some negative samples cannot pass all stages, pass rate is "
             << ((dataset.nInd.size())/(double)(nNeg)) << endl;
@@ -166,6 +165,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             << t << ". nNegPass = " << dataset.nNeg << endl;
             break;
         }
+        
         //选取部分正负样本作为根节点的输入样本。
         int nPosSam = max((int)round(dataset.nPos* para.samFrac), para.minSamples);
         vector<int> posIndex(dataset.nPos);
@@ -188,6 +188,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         
         int minLeaf_t = max( (int)round((nPosSam+nNegSam)* para.minLeafFrac), para.minLeaf);
         
+        
         printf("\nIter %d: nPos=%d, nNeg=%d, ", t, nPosSam, nNegSam);
         
         DQT *tree = new DQT();
@@ -205,7 +206,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         }
         
         dataset.nInd.swap(temNegPassIndex);
-        dataset.nNeg = dataset.nInd.size();
+        dataset.nNeg = (int)dataset.nInd.size();
         tree->FAR = dataset.nNeg / nNegPass;
         nNegPass = dataset.nNeg;
         weakClassifier.push_back(tree);

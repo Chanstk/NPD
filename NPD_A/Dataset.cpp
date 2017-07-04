@@ -11,14 +11,14 @@ Dataset::Dataset(char *pf, char *nf, char *bf):npdTable(256, 256, 1)
 	nPos = 0;
 	nNeg = 0;
 	pfile = pf;
-	pfile = nf;
+	nfile = nf;
     bootFile = bf;
 	return ;
 }
 
 void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName)
 {
-    num_of_sams = 0;
+    int count = 0;
     ifstream file(fileName);
     string imageName;
     while (getline(file, imageName))
@@ -29,16 +29,20 @@ void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName
             printf("empty file path:%s\n", imageName.c_str());
             continue;
         }
-        num_of_sams++;
+        
         if (image.cols != para.windSize || image.rows != para.windSize)
         {
             cv::resize(image, image, cv::Size(para.windSize, para.windSize));
         }
-        
         images.push_back(image);
+        count++;
+        if(count >= num_of_sams){
+            cout<<"The picture has been already enough";
+            break;
+        }
     }
     file.close();
-    printf("done\n");
+    printf(" done\n");
     return;
 }
 
@@ -59,7 +63,8 @@ void Dataset::calculateNpdTable()
 
 void Dataset::calculateFea(Mat& sam, const vector<Mat>& images, const int& num)
 {
-	int pixels = para.windSize * para.windSize;  //20 * 20;
+    int pixels = para.windSize * para.windSize;
+    sam = Mat(num, pixels * (pixels - 1) / 2, CV_8UC1);  //20 * 20;
 	for (int k = 0; k < num; k++) {
 		int n = 0;
 		uchar* addr = (images[k]).data;
@@ -68,6 +73,7 @@ void Dataset::calculateFea(Mat& sam, const vector<Mat>& images, const int& num)
 			addr = images[k].data + i;
 			for (int j = i + 1; j < pixels; j++) {
 				sam.at<uchar>(k, n++) = npdTable.at<uchar>(*addr, *(addr - i + j));
+                
 			}
 		}
 	}
@@ -78,20 +84,18 @@ void Dataset::initWeight(int nPos, int nNeg)
 {
     posFit.clear();
     negFit.clear();
-    this->pweight = new float[nPos];
-    this->nweight = new float[nNeg];
+    this->pweight.clear();
+    this->nweight.clear();
     lengthOfPosW = nPos;
     lengthOfNegW = nNeg;
     pInd.clear();
     for(int i = 0; i < nPos; i++){
-        pweight[i] = ((float)1.0)/ nPos;
-        pInd.push_back(i);
+        pweight.push_back((float)1.0 / nPos);
         posFit.push_back(0);
     }
-    
+    nInd.clear();
     for(int i = 0; i < nNeg; i++){
-        nweight[i] = ((float)1.0)/ nNeg;
-        nInd.push_back(i);
+        nweight.push_back((float)1.0 / nNeg);
         negFit.push_back(0);
     }
 }
@@ -114,7 +118,7 @@ void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &
             break;
         }
     }
-    k = CHEN_MIN(k, posIndex.size() - para.minSamples);
+    k = CHEN_MIN(k, (int)posIndex.size() - para.minSamples);
     
     double trimWeight = dataset.pweight[posIndexSort[k]];
     
@@ -144,7 +148,7 @@ void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &
             break;
         }
     }
-    k = CHEN_MIN(k, negIndex.size() - para.minSamples);
+    k = CHEN_MIN(k, (int)negIndex.size() - para.minSamples);
     
     trimWeight = dataset.nweight[negIndexSort[k]];
     
@@ -158,7 +162,7 @@ void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &
 }
 
 void Dataset::CalcuWeight(){
-    int n = this->posFit.size();
+    int n = (int)this->posFit.size();
     double sum = 0;
     for (int i = 0; i < n; i++) {
         pweight[this->pInd[i]] = min(exp(-1 * this->posFit[i]), para.maxWeight);
@@ -174,7 +178,7 @@ void Dataset::CalcuWeight(){
             pweight[this->pInd[i]] /= sum;
         }
     }
-    n = this->negFit.size();
+    n = (int)this->negFit.size();
     sum = 0;
     for (int i = 0; i < n; i++) {
         nweight[this->nInd[i]] = min(exp(1 * this->negFit[i]), para.maxWeight);
@@ -218,7 +222,6 @@ void Dataset::AddNegSam(int numOfSam){
             nInd.push_back(i);
             nNeg++;
             nweight[i] = (float)1 / a;
-
         }
         if(bootStrapImages.size() == 0){
             cout<<"not enough images for bootstrap"<<endl;
@@ -239,11 +242,20 @@ void Dataset::AddNegSam(int numOfSam){
 void Dataset::initSamples()
 {
 	calculateNpdTable();
-	readImage(p_images, nPos, pfile);
-	readImage(n_images, nNeg, nfile);
-    readImage(bootStrapImages, bootNum, bootFile);
-	calculateFea(pSam, p_images, nPos);
-    calculateFea(nSam, n_images, nNeg);
+    cout<<"Prepare postive sample"<<endl;
+	readImage(p_images, para.numPosSample, pfile);
+    cout<<"Prepare negtive sample"<<endl;
+	readImage(n_images, para.numPosSample * para.negRatio, nfile);
+    cout<<"Prepare bootstrap sample"<<endl;
+    readImage(bootStrapImages, para.bootNum, bootFile);
+	calculateFea(pSam, p_images, para.numPosSample);
+    for(int i = 0; i < (int)pSam.rows; i++)
+        pInd.push_back(i);
+    calculateFea(nSam, n_images, para.numPosSample * para.negRatio);
+    for(int i = 0; i < (int)nSam.rows; i++)
+        nInd.push_back(i);
+    nPos = (int)pInd.size();
+    nNeg = (int)nInd.size();
 //	initWeight(nPos, pweight);
 //	initWeight(nNeg, nweight);
 	return ;

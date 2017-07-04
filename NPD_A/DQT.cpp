@@ -7,7 +7,7 @@
 //
 #include "Adaboost.h"
 extern Parameter para;
-void WeightHist(const cv::Mat& X, float* W, vector<int>& index, int n, int count[256], double wHist[256]){
+void WeightHist(const cv::Mat& X, vector<float> W, vector<int>& index, int n, int count[256], double wHist[256]){
     memset(wHist, 0, 256 * sizeof(double));
     
     for (int j = 0; j < n; j++){
@@ -24,7 +24,7 @@ void DQT::Init_tree(vector<int>& pInd,
     for(int i = 0; i < pInd.size(); i++)
         root->pInd.push_back(pInd[i]);
     for(int i = 0; i < nInd.size(); i++)
-        root->pInd.push_back(nInd[i]);
+        root->nInd.push_back(nInd[i]);
     root->Init(0, minLeaf);
     root->level = 1;
 }
@@ -34,7 +34,6 @@ double Node::SplitNode(Dataset &dataset){
     int nPos = (int)pInd.size();
     int nNeg = (int)nInd.size();
     double w = 0.0;
-    
     for(int i = 0; i < nPos; i++)
         w += dataset.pweight[pInd[i]];
     double minCost = w * (parentFit - 1) * (parentFit - 1);
@@ -50,6 +49,10 @@ double Node::SplitNode(Dataset &dataset){
     
     minCost = 1e16f;
     //遍历特征
+//    cout<<"hello"<<endl;
+//    cout<<omp_get_max_threads();
+//    cout<<"hello"<<endl;
+    #pragma omp parallel for
     for(int i = 0; i < feaDims; i++){
         int count[256];
         double posWhist[256];
@@ -121,6 +124,7 @@ double Node::SplitNode(Dataset &dataset){
         if(thr0 == -1) continue;
         if (minMSE <= minCost)
         {
+#pragma omp critical
             minCost = minMSE;
             featId = i;
             threshold1 = thr0;
@@ -134,14 +138,14 @@ double Node::SplitNode(Dataset &dataset){
 
 double Node::RecurLearn(Dataset & dataset){
     double minCost = this->SplitNode(dataset);
-    int nPos = this->pInd.size();
-    int nNeg = this->nInd.size();
+    int nPos = (int)this->pInd.size();
+    int nNeg = (int)this->nInd.size();
     //未选择特征
     if(this->featId == -1) return minCost;
     //达到最大树高
     if(this->level >= 8) return minCost;
-    
-    int lPos = 0, rPos = 0, lNeg = 0, rNeg = 0;
+    cout<<this->featId<<endl;
+//    int lPos = 0, rPos = 0, lNeg = 0, rNeg = 0;
     float leftThr = this->threshold1;
     float rightThr = this->threshold2;
     
@@ -162,7 +166,7 @@ double Node::RecurLearn(Dataset & dataset){
             rChild->pInd.push_back(this->pInd[j]);
     
     //负样本分入左右子树
-    for(int j = 0; j < nPos; j++)
+    for(int j = 0; j < nNeg; j++)
         if(dataset.nSam.at<uchar>(size_t(this->nInd[j]), size_t(this->featId))< leftThr || dataset.nSam.at<uchar>(size_t(this->nInd[j]), size_t(this->featId)) > rightThr)
             lChild->nInd.push_back(this->nInd[j]);
         else

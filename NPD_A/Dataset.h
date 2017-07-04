@@ -7,12 +7,13 @@ class Dataset {
 public:
 	Mat pSam;
 	Mat nSam;
+    Mat negPool;
 	int nPos;
 	int nNeg;
     int bootNum;
     vector<int> pInd, nInd;
-	float *pweight;
-	float *nweight;
+	vector<float> pweight;
+	vector<float> nweight;
     int lengthOfPosW;
     int lengthOfNegW;
     vector<double> posFit;

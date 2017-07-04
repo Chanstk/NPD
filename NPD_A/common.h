@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <vector>
 #include <math.h>
+#include <omp.h>
 #include "Parameter.h"
 #include<opencv2/core/core.hpp>
 #include<opencv2/highgui/highgui.hpp>
