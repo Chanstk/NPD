@@ -32,6 +32,6 @@ public:
 	void initSamples();
     void CalcuWeight();
     void AddNegSam(int numOfSam);
-    void TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &dataset);
+    void TrimWeight(vector<int>& posIndex, vector<int>& negIndex);
 };
 #endif

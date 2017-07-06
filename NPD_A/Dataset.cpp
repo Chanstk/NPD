@@ -100,11 +100,11 @@ void Dataset::initWeight(int nPos, int nNeg)
     }
 }
 
-void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &dataset){
+void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex){
     vector<int> trimedPosIndex;
     vector<int> posIndexSort(posIndex);
     vector<double> posW;
-    for(int i = 0; i < dataset.lengthOfPosW; i++)
+    for(int i = 0; i < lengthOfPosW; i++)
         posW.push_back(pweight[i]);
     //TODO
     IndexSort(posIndexSort, posW);
@@ -112,7 +112,7 @@ void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &
     double cumsum = 0;
     int k = 0;
     for (int i = 0; i < int(posIndexSort.size()); i++) {
-        cumsum += dataset.pweight[posIndexSort[i]];
+        cumsum += pweight[posIndexSort[i]];
         if (cumsum >= para.trimFrac) {
             k = i;
             break;
@@ -120,10 +120,10 @@ void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &
     }
     k = CHEN_MIN(k, (int)posIndex.size() - para.minSamples);
     
-    double trimWeight = dataset.pweight[posIndexSort[k]];
+    double trimWeight = pweight[posIndexSort[k]];
     
     for (int i = 0; i < int(posIndex.size()); i++) {
-        if (dataset.pweight[posIndex[i]] >= trimWeight)
+        if (pweight[posIndex[i]] >= trimWeight)
             trimedPosIndex.push_back(posIndex[i]);
     }
     posIndex.clear();
@@ -134,7 +134,7 @@ void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &
     vector<int> trimedNegIndex;
     vector<int> negIndexSort(negIndex);
     vector<double> negW;
-    for(int i = 0; i < dataset.lengthOfNegW; i++)
+    for(int i = 0; i < lengthOfNegW; i++)
         negW.push_back(nweight[i]);
     //TODO
     IndexSort(negIndexSort, negW);
@@ -142,7 +142,7 @@ void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &
     cumsum = 0;
     //int k;
     for (int i = 0; i < int(negIndexSort.size()); i++) {
-        cumsum += dataset.nweight[negIndexSort[i]];
+        cumsum += nweight[negIndexSort[i]];
         if (cumsum >= para.trimFrac) {
             k = i;
             break;
@@ -150,10 +150,10 @@ void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &
     }
     k = CHEN_MIN(k, (int)negIndex.size() - para.minSamples);
     
-    trimWeight = dataset.nweight[negIndexSort[k]];
+    trimWeight = nweight[negIndexSort[k]];
     
     for (int i = 0; i < int(negIndex.size()); i++) {
-        if (dataset.nweight[negIndex[i]] >= trimWeight)
+        if (nweight[negIndex[i]] >= trimWeight)
             trimedNegIndex.push_back(negIndex[i]);
     }
     negIndex.clear();
@@ -162,36 +162,37 @@ void Dataset::TrimWeight(vector<int>& posIndex, vector<int>& negIndex, Dataset &
 }
 
 void Dataset::CalcuWeight(){
-    int n = (int)this->posFit.size();
+    //posfit的大小为pSam的大小，只是未通过检测的样本posfit 为0，无意义
+    int n = (int)pInd.size();
     double sum = 0;
     for (int i = 0; i < n; i++) {
-        pweight[this->pInd[i]] = min(exp(-1 * this->posFit[i]), para.maxWeight);
-        sum += pweight[this->pInd[i]];
+        pweight[pInd[i]] = min(exp(-1 * posFit[pInd[i]]), para.maxWeight);
+        sum += pweight[pInd[i]];
     }
     if (sum == 0) {
         for (int i = 0; i < n; i++) {
-            pweight[this->pInd[i]] = 1./n;
+            pweight[pInd[i]] = 1./n;
         }
     }
     else{
         for (int i = 0; i < n; i++) {
-            pweight[this->pInd[i]] /= sum;
+            pweight[pInd[i]] /= sum;
         }
     }
-    n = (int)this->negFit.size();
+    n = (int)nInd.size();
     sum = 0;
     for (int i = 0; i < n; i++) {
-        nweight[this->nInd[i]] = min(exp(1 * this->negFit[i]), para.maxWeight);
-        sum += nweight[this->nInd[i]];
+        nweight[nInd[i]] = min(exp(1 * negFit[nInd[i]]), para.maxWeight);
+        sum += nweight[nInd[i]];
     }
     if (sum == 0) {
         for (int i = 0; i < n; i++) {
-            nweight[this->nInd[i]] = 1./n;
+            nweight[nInd[i]] = 1./n;
         }
     }
     else{
         for (int i = 0; i < n; i++) {
-            nweight[this->nInd[i]] /= sum;
+            nweight[nInd[i]] /= sum;
         }
     }
 }
@@ -205,7 +206,8 @@ void Dataset::AddNegSam(int numOfSam){
     int count = 0;
     int pixels = para.windSize * para.windSize;
     vector<int> formNInd(nInd);
-    for(int i = 0; i < nInd.size() + numOfSam; i++){
+    for(int i = 0; i < nSam.rows; i++){
+        //如果该负样本已经无效
         if(find(nInd.begin(), nInd.end(), i)!= nInd.end()){
             //替换原有负样本
             count++;
@@ -242,12 +244,15 @@ void Dataset::AddNegSam(int numOfSam){
 void Dataset::initSamples()
 {
 	calculateNpdTable();
-    cout<<"Prepare postive sample"<<endl;
+    cout<<"Prepare postive samples"<<endl;
 	readImage(p_images, para.numPosSample, pfile);
-    cout<<"Prepare negtive sample"<<endl;
+    cout<<"The number of postvie samples is "<<p_images.size()<<endl;
+    cout<<"Prepare negtive samples"<<endl;
 	readImage(n_images, para.numPosSample * para.negRatio, nfile);
-    cout<<"Prepare bootstrap sample"<<endl;
+        cout<<"The number of negtive samples is "<<n_images.size()<<endl;
+    cout<<"Prepare bootstrap samples"<<endl;
     readImage(bootStrapImages, para.bootNum, bootFile);
+        cout<<"The number of bootstrapImage samples is "<<bootStrapImages.size()<<endl;
 	calculateFea(pSam, p_images, para.numPosSample);
     for(int i = 0; i < (int)pSam.rows; i++)
         pInd.push_back(i);

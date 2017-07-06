@@ -19,7 +19,7 @@ void Parameter::paraDefine(){
     minLeaf = 10;			// minimal samples required in each leaf node.This is used to avoid overfitting.
     maxWeight = 100;		// maximal sample weight in AdaBoost; used to ensure numerical stability.
     numThreads = 10;		// the number of computing threads in tree learning
-    numPosSample = 50;
+    numPosSample = 500;
     bootNum = 1000;
 }
 

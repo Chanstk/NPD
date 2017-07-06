@@ -49,9 +49,6 @@ double Node::SplitNode(Dataset &dataset){
     
     minCost = 1e16f;
     //遍历特征
-//    cout<<"hello"<<endl;
-//    cout<<omp_get_max_threads();
-//    cout<<"hello"<<endl;
     #pragma omp parallel for
     for(int i = 0; i < feaDims; i++){
         int count[256];
@@ -122,15 +119,18 @@ double Node::SplitNode(Dataset &dataset){
             }
         }
         if(thr0 == -1) continue;
-        if (minMSE <= minCost)
-        {
 #pragma omp critical
-            minCost = minMSE;
-            featId = i;
-            threshold1 = thr0;
-            threshold2 = thr1;
-            leftFit = fit0;
-            rightFit = fit1;
+        {
+            if (minMSE <= minCost)
+            {
+
+                minCost = minMSE;
+                featId = i;
+                threshold1 = thr0;
+                threshold2 = thr1;
+                leftFit = fit0;
+                rightFit = fit1;
+            }
         }
     }
     return minCost;
@@ -138,17 +138,17 @@ double Node::SplitNode(Dataset &dataset){
 
 double Node::RecurLearn(Dataset & dataset){
     double minCost = this->SplitNode(dataset);
-    int nPos = (int)this->pInd.size();
-    int nNeg = (int)this->nInd.size();
     //未选择特征
     if(this->featId == -1) return minCost;
     //达到最大树高
     if(this->level >= 8) return minCost;
     cout<<this->featId<<endl;
-//    int lPos = 0, rPos = 0, lNeg = 0, rNeg = 0;
+    
     float leftThr = this->threshold1;
     float rightThr = this->threshold2;
     
+    int nPos = (int)this->pInd.size();
+    int nNeg = (int)this->nInd.size();
     //左右子树初始化
     Node* lChild = new Node();
     Node* rChild = new Node();
@@ -177,7 +177,7 @@ double Node::RecurLearn(Dataset & dataset){
     double minCost2 = rChild->RecurLearn(dataset);
     
     //本节点无左右子树
-    if(lChild->threshold1 == -1 && rChild->threshold1 == -1){
+    if(lChild->featId == -1 && rChild->featId == -1){
         delete lChild;
         delete rChild;
         return minCost;
@@ -188,11 +188,18 @@ double Node::RecurLearn(Dataset & dataset){
         delete rChild;
         return minCost;
     }
-    
     minCost = minCost1 + minCost2;
-    
-    this->lChild = lChild;
-    this->rChild = rChild;
+    //左右子树都在
+    if(lChild->featId!=-1 && lChild->featId != -1){
+        this->lChild = lChild;
+        this->rChild = rChild;
+    }
+    //无右子树
+    if(lChild->featId == -1)
+        this->rChild = rChild;
+    //无左子树
+    if(rChild->featId == -1)
+        this->lChild = lChild;
     return minCost;
 }
 
@@ -234,6 +241,7 @@ void Node::Init(float parentFit, int minLeaf_){
 void DQT::CalcuThreshold(Dataset &dataset){
     vector<double> v;
     for (int i = 0; i < int(dataset.nPos); i++) {
+        //POSFIT的trace TODO
         dataset.posFit[dataset.pInd[i]] += this->TestMyself(dataset.pSam.row(dataset.pInd[i]));
         v.push_back(dataset.posFit[dataset.pInd[i]]);
     }
@@ -244,7 +252,8 @@ void DQT::CalcuThreshold(Dataset &dataset){
 
 double DQT::RecurTest(const cv::Mat& x, Node * node){
     unsigned char * ptr = x.data;
-    if(ptr[node->featId] < node->threshold1 || ptr[node->featId] > node->threshold1){
+    uchar a = ptr[node->featId];
+    if(ptr[node->featId] < node->threshold1 || ptr[node->featId] > node->threshold2){
         if(node->lChild == NULL)
             return node->leftFit;
         else

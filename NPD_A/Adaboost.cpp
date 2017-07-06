@@ -92,7 +92,6 @@ void Adaboost::TestAdaboost(vector<double>& Fx, vector<int>& passCount, cv::Mat&
     Fx.resize(n);
     passCount.resize(n);
     for (int i = 0; i < n; i++) {	//for each image
-        
         bool run = true;
         
         for (int j = 0; j < int(weakClassifier.size()) && run; j++) {	//for each weak classifier
@@ -117,16 +116,17 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
     int T = (int)weakClassifier.size();
     if(T){
         cout<<"Test current model"<<endl;
-        //测试样本， datase里面将未经过测试的样本剔除
+        //测试样本， dataset里面将未经过测试的样本剔除
         //测试正样本
         dataset.pInd.clear();
         dataset.posFit.clear();
+        dataset.posFit.resize(nPos);
         TestAdaboost(posFit, passCount, dataset.pSam);
         for (int i = 0; i < int(passCount.size()); i++) {
             if (passCount[i] == T) {
                 //通过测试的正样本
                 dataset.pInd.push_back(i);
-                dataset.posFit.push_back(posFit[i]);
+                dataset.posFit[i] = posFit[i];
             }
         }
         dataset.nPos = (int)dataset.pInd.size();
@@ -138,11 +138,12 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         //测试负样本
         dataset.nInd.clear();
         dataset.negFit.clear();
+        dataset.negFit.resize(nNeg);
         TestAdaboost(negFit, passCount, dataset.nSam);
         for (int i = 0; i < int(passCount.size()); i++) {
             if (passCount[i] == T) {
                 dataset.nInd.push_back(i);
-                dataset.negFit.push_back(negFit[i]);
+                dataset.negFit[i] = negFit[i];
             }
         }
         dataset.nNeg = (int)dataset.nInd.size();
@@ -182,7 +183,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         random_shuffle(negIndex.begin(), negIndex.end());
         negIndex.resize(nNegSam);
         //TODO
-        dataset.TrimWeight(posIndex, negIndex, dataset);
+        dataset.TrimWeight(posIndex, negIndex);
         nPosSam = (int)posIndex.size();
         nNegSam = (int)negIndex.size();
         
@@ -207,10 +208,10 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         
         dataset.nInd.swap(temNegPassIndex);
         dataset.nNeg = (int)dataset.nInd.size();
-        tree->FAR = dataset.nNeg / nNegPass;
+        tree->FAR = (float)(dataset.nNeg * 1.0 / nNegPass);
         nNegPass = dataset.nNeg;
         weakClassifier.push_back(tree);
-        
+        //TODO 写入模型
         double FAR = 1;
         for (int i = 0; i < weakClassifier.size(); i++)
             FAR *= weakClassifier[i]->FAR;

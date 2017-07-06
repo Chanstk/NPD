@@ -474,9 +474,12 @@
 		63A8C7BA1F0391F800B30567 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CC = "/usr/local/bin/clang-omp";
+				CLANG_ENABLE_MODULES = NO;
 				HEADER_SEARCH_PATHS = (
 					/usr/local/include/opencv,
 					/usr/local/include,
+					/usr/local/Cellar/libiomp/20150701/include/libiomp,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -490,9 +493,12 @@
 		63A8C7BB1F0391F800B30567 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CC = "/usr/local/bin/clang-omp";
+				CLANG_ENABLE_MODULES = NO;
 				HEADER_SEARCH_PATHS = (
 					/usr/local/include/opencv,
 					/usr/local/include,
+					/usr/local/Cellar/libiomp/20150701/include/libiomp,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
