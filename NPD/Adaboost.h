@@ -13,6 +13,7 @@
 using namespace std;
 class Node{
 public:
+    int ID;
     float leftFit, rightFit, threshold1, threshold2, score, parentFit;
     int featId, level, minLeaf;
     vector<int> pInd, nInd;
@@ -39,7 +40,9 @@ public:
     double RecurTest(const cv::Mat& x, Node * node);
     //TODO
     void CaucultNode();
-    
+    void SaveTree(char * fileName, int ID);
+    vector<Node*> LinkNodeToVec();
+    void RecurAddNode(vector<Node*>& vec, Node* node);
 };
 
 class Adaboost{

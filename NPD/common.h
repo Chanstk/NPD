@@ -18,6 +18,7 @@
 #include<opencv2/core/core.hpp>
 #include<opencv2/highgui/highgui.hpp>
 #include<opencv2/imgproc/imgproc.hpp>
+#include "pugixml.hpp"
 #define common_h
 typedef unsigned char uchar;
 using namespace std;

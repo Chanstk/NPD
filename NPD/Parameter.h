@@ -13,6 +13,7 @@ class Parameter {
     int minSamples;
     float negRatio;
     int windSize;
+    char* modelName;
     // minimal fraction of negative samples required to remain,
     
     // w.r.t.the total number of negative samples.This is a signal of

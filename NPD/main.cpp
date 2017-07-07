@@ -8,6 +8,7 @@
 #include "common.h"
 #include "Dataset.h"
 #include "Adaboost.h"
+
 extern Parameter para = Parameter();
 int main(int argc, const char * argv[]) {
     para.paraDefine();

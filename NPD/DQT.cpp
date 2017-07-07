@@ -27,6 +27,7 @@ void DQT::Init_tree(vector<int>& pInd,
         root->nInd.push_back(nInd[i]);
     root->Init(0, minLeaf);
     root->level = 1;
+    root->ID = 0;
 }
 
 double Node::SplitNode(Dataset &dataset){
@@ -157,6 +158,8 @@ double Node::RecurLearn(Dataset & dataset){
     lChild->level = this->level + 1;
     rChild->Init(this->rightFit, minLeaf);
     rChild->level = this->level + 1;
+    lChild->ID = this->ID * 2 + 1;
+    rChild->ID = this->ID * 2 + 2;
     
     //正样本分入左右子树
     for(int j = 0; j < nPos; j++)
@@ -171,11 +174,11 @@ double Node::RecurLearn(Dataset & dataset){
             lChild->nInd.push_back(this->nInd[j]);
         else
             rChild->nInd.push_back(this->nInd[j]);
-    
+
     //左右子树递归
     double minCost1 = lChild->RecurLearn(dataset);
     double minCost2 = rChild->RecurLearn(dataset);
-    
+
     //本节点无左右子树
     if(lChild->featId == -1 && rChild->featId == -1){
         delete lChild;
@@ -235,6 +238,7 @@ void Node::Init(float parentFit, int minLeaf_){
     minLeaf = minLeaf_;
     lChild = NULL;
     rChild = NULL;
+    ID = -1;
 }
 
 //posFx 的值是前n个分类器输出之和
@@ -252,7 +256,7 @@ void DQT::CalcuThreshold(Dataset &dataset){
 
 double DQT::RecurTest(const cv::Mat& x, Node * node){
     unsigned char * ptr = x.data;
-    uchar a = ptr[node->featId];
+    
     if(ptr[node->featId] < node->threshold1 || ptr[node->featId] > node->threshold2){
         if(node->lChild == NULL)
             return node->leftFit;
@@ -267,6 +271,40 @@ double DQT::RecurTest(const cv::Mat& x, Node * node){
     }
 }
 
+void DQT::RecurAddNode(vector<Node *> &vec, Node *node){
+    if(node == NULL)
+        return;
+    vec.push_back(node);
+    RecurAddNode(vec, node->lChild);
+    RecurAddNode(vec, node->rChild);
+}
+void DQT::SaveTree(char *fileName, int ID){
+    vector<Node *> vec;
+    vec = LinkNodeToVec();
+    cout<<"This DQT contains "<<(int)vec.size()<<" nodes"<<endl;
+    pugi::xml_document doc;
+    doc.load_file(fileName);
+    
+    pugi::xml_node tree = doc.append_child("Tree");
+    tree.append_attribute("ID") = ID;
+    
+    for(vector<Node*>::iterator it = vec.begin(); it != vec.end(); it++){
+        pugi::xml_node node = tree.append_child("Node");
+        node.append_attribute("ID") = (*it)->ID;
+        node.append_attribute("leftFit") = (*it)->leftFit;
+        node.append_attribute("rightFit") = (*it)->rightFit;
+        node.append_attribute("threshold1") = (*it)->threshold1;
+        node.append_attribute("threshold2") = (*it)->threshold2;
+        node.append_attribute("featID") = (*it)->featId;
+    }
+    doc.save_file(fileName);
+}
+vector<Node*> DQT::LinkNodeToVec(){
+    vector<Node*> vec;
+    RecurAddNode(vec, root);
+    return vec;
+}
 double DQT::TestMyself(const cv::Mat& x){
     return RecurTest(x, this->root);
 }
+

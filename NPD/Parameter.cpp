@@ -21,5 +21,6 @@ void Parameter::paraDefine(){
     numThreads = 10;		// the number of computing threads in tree learning
     numPosSample = 500;
     bootNum = 1000;
+    modelName = "Tree.xml";
 }
 
