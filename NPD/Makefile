@@ -1,8 +1,8 @@
-CC = g++
+CC = g++ -fopenmp
 # 可执行文件
 TARGET = test
 # C文件
-SRCS = Adaboost.cpp Dataset.cpp DQT.cpp main.cpp Parameter.cpp
+SRCS = pugixml.cpp Adaboost.cpp Dataset.cpp DQT.cpp main.cpp Parameter.cpp
 # 目标文件
 OBJS = $(SRCS:.cpp=.o)
 # 库文件
