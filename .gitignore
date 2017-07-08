@@ -2,3 +2,4 @@ boot/
 neg/
 pos/
 opencvlib/
+*.o

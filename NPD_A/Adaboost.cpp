@@ -212,7 +212,6 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         nNegPass = dataset.nNeg;
         tree->SaveTree(para.modelName, t);
         weakClassifier.push_back(tree);
-        //TODO 写入模型
         double FAR = 1;
         for (int i = 0; i < weakClassifier.size(); i++)
             FAR *= weakClassifier[i]->FAR;

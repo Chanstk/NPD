@@ -193,16 +193,23 @@ double Node::RecurLearn(Dataset & dataset){
     }
     minCost = minCost1 + minCost2;
     //左右子树都在
-    if(lChild->featId!=-1 && lChild->featId != -1){
+    if(lChild->featId != -1 && rChild->featId != -1){
         this->lChild = lChild;
         this->rChild = rChild;
+        return minCost;
     }
     //无右子树
-    if(lChild->featId == -1)
-        this->rChild = rChild;
-    //无左子树
-    if(rChild->featId == -1)
+    if(lChild->featId != -1){
         this->lChild = lChild;
+        return minCost;
+    }
+    //无左子树
+    if(rChild->featId != -1){
+        this->rChild = rChild;
+        return minCost;
+    }
+    cout<<"Wrong at Recur node"<<endl;
+    exit(0);
     return minCost;
 }
 
@@ -272,11 +279,11 @@ double DQT::RecurTest(const cv::Mat& x, Node * node){
 }
 
 void DQT::RecurAddNode(vector<Node *> &vec, Node *node){
-    if(node == NULL)
-        return;
     vec.push_back(node);
-    RecurAddNode(vec, node->lChild);
-    RecurAddNode(vec, node->rChild);
+    if(node->lChild != NULL)
+        RecurAddNode(vec, node->lChild);
+    if(node->rChild != NULL)
+        RecurAddNode(vec, node->rChild);
 }
 void DQT::SaveTree(char *fileName, int ID){
     vector<Node *> vec;
@@ -287,7 +294,7 @@ void DQT::SaveTree(char *fileName, int ID){
     
     pugi::xml_node tree = doc.append_child("Tree");
     tree.append_attribute("ID") = ID;
-    
+    tree.append_attribute("threshold") = this->threshold;
     for(vector<Node*>::iterator it = vec.begin(); it != vec.end(); it++){
         pugi::xml_node node = tree.append_child("Node");
         node.append_attribute("ID") = (*it)->ID;
