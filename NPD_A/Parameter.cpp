@@ -4,9 +4,15 @@ void Parameter::paraDefine(){
     MINDR =  1;
     MAXFAR = 1e-3;
     tree_level = 8;
+<<<<<<< HEAD
+    max_stage = 10000;
+    obj_size = 20;
+    finalNegs = 10;
+=======
     max_stage = 15;
     obj_size = 20;
     finalNegs = 1000;
+>>>>>>> origin/master
     minSamples = 1000;
     negRatio = 1;
     windSize = 20;

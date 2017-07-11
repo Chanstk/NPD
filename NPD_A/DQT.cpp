@@ -262,7 +262,6 @@ void DQT::CalcuThreshold(Dataset &dataset){
 
 double DQT::RecurTest(const cv::Mat& x, xNode * node){
     unsigned char * ptr = x.data;
-    
     if(ptr[node->featId] < node->threshold1 || ptr[node->featId] > node->threshold2){
         if(node->lChild == NULL)
             return node->leftFit;
