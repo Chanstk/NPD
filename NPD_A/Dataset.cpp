@@ -208,7 +208,7 @@ void Dataset::AddNegSam(int numOfSam){
     vector<int> formNInd(nInd);
     for(int i = 0; i < nSam.rows; i++){
         //如果该负样本已经无效
-        if(find(nInd.begin(), nInd.end(), i)!= nInd.end()){
+        if(find(nInd.begin(), nInd.end(), i)== nInd.end()){
             //替换原有负样本
             count++;
             int n = 0;
@@ -223,7 +223,7 @@ void Dataset::AddNegSam(int numOfSam){
             bootStrapImages.erase(bootStrapImages.begin());
             nInd.push_back(i);
             nNeg++;
-            nweight[i] = (float)1 / a;
+            nweight[i] = ((float)1) / a;
         }
         if(bootStrapImages.size() == 0){
             cout<<"not enough images for bootstrap"<<endl;

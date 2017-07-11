@@ -3,3 +3,4 @@ neg/
 pos/
 opencvlib/
 *.o
+*.jpg

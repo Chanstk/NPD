@@ -44,11 +44,12 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
         //TOOD
         //负样本bootstrap
         int needNumNegs = desiredNumNegs - dataset.nNeg;
-        if(needNumNegs > 0)
+        if(needNumNegs > 0){
+	   cout<<"Bootstrap negtive samples"<<endl;
             dataset.AddNegSam(needNumNegs);
+	}
+	cout<<"After bootstrap :"<<dataset.nNeg<<endl;
         //负样本不够，退出
-        if(dataset.nNeg < para.finalNegs)
-            break;
         T = (int)weakClassifier.size();
         if(dataset.nNeg < para.finalNegs){
             printf("\n\nNo enough negative examples to bootstrap (nNeg=%d). The detector training is terminated.\n", dataset.nNeg);
@@ -77,7 +78,8 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
         for (int i = 0; i < int(weakClassifier.size()); i++) {
             far *= weakClassifier[i]->FAR;
         }
-        cout<<"Weak classifier " << T <<" FAR: "<<far;
+        cout<<"Weak classifier " << T <<" FAR: "<<far<<endl;
+
         
         if (far <= para.MAXFAR || T >= para.max_stage || finished) {
             printf("\n\nThe detector training is finished.\n");
@@ -159,7 +161,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             
     }else
         dataset.initWeight(nPos, nNeg);
-    
+    int primNegNumber = dataset.nNeg; 
     int nNegPass = dataset.nNeg;
     for(int t = T; t < para.max_stage; t++){
         if(dataset.nNeg <= para.minSamples){
@@ -167,7 +169,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             << t << ". nNegPass = " << dataset.nNeg << endl;
             break;
         }
-        
+       cout<<"***********************************"<<endl; 
         //选取部分正负样本作为根节点的输入样本。
         int nPosSam = max((int)round(dataset.nPos* para.samFrac), para.minSamples);
         vector<int> posIndex(dataset.nPos);
@@ -184,14 +186,22 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         random_shuffle(negIndex.begin(), negIndex.end());
         negIndex.resize(nNegSam);
         //TODO
+	cout<<"Before trim the num of posIndex is "<<posIndex.size()<<endl;
+	cout<<"Before trim the num of negIndex is "<<negIndex.size()<<endl;
         dataset.TrimWeight(posIndex, negIndex);
         nPosSam = (int)posIndex.size();
         nNegSam = (int)negIndex.size();
         
         int minLeaf_t = max( (int)round((nPosSam+nNegSam)* para.minLeafFrac), para.minLeaf);
+<<<<<<< HEAD
         cout<<"THe minLeft at this stage is " <<minLeaf_t;
         
         printf("\nIter %d: nPos=%d, nNeg=%d, ", t, nPosSam, nNegSam);
+=======
+        
+ 	cout<<"The minLeaf at this stage is "<<minLeaf_t<<endl;       
+        printf("Iter %d: nPos=%d, nNeg=%d, ", t, nPosSam, nNegSam);
+>>>>>>> origin/master
         
         DQT *tree = new DQT();
         tree->CreateTree(dataset,posIndex, negIndex, minLeaf_t);
@@ -208,11 +218,12 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             if(dataset.negFit[dataset.nInd[i]] >= tree->threshold)
                 temNegPassIndex.push_back(dataset.nInd[i]);
         }
-        
+
         dataset.nInd.swap(temNegPassIndex);
         dataset.nNeg = (int)dataset.nInd.size();
         tree->FAR = (float)(dataset.nNeg * 1.0 / nNegPass);
-        nNegPass = dataset.nNeg;
+        cout<<"The FAR of this tree is "<<tree->FAR<<endl;
+	nNegPass = dataset.nNeg;
         tree->SaveTree(para.modelName, t);
         weakClassifier.push_back(tree);
         double FAR = 1;
@@ -224,7 +235,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             printf("\n\nThe training is converged at iteration %d. FAR = %.2f%%\n", t, FAR * 100);
             break;
         }
-        if (nNegPass < dataset.nNeg * para.minNegRatio || nNegPass < para.minSamples) {
+        if (nNegPass <= primNegNumber * para.minNegRatio || nNegPass <= para.minSamples) {
             printf("\n\nNo enough negative samples. The AdaBoost learning terminates at iteration %d. nNegPass = %d.\n", t, nNegPass);
             break;
         }

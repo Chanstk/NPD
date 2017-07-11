@@ -20,7 +20,7 @@ void WeightHist(const cv::Mat& X, vector<float> W, vector<int>& index, int n, in
 void DQT::Init_tree(vector<int>& pInd,
           vector<int>& nInd,
           int minLeaf){
-    this->root = new Node();
+    this->root = new xNode();
     for(int i = 0; i < pInd.size(); i++)
         root->pInd.push_back(pInd[i]);
     for(int i = 0; i < nInd.size(); i++)
@@ -30,7 +30,7 @@ void DQT::Init_tree(vector<int>& pInd,
     root->ID = 0;
 }
 
-double Node::SplitNode(Dataset &dataset){
+double xNode::SplitxNode(Dataset &dataset){
     
     int nPos = (int)pInd.size();
     int nNeg = (int)nInd.size();
@@ -137,13 +137,12 @@ double Node::SplitNode(Dataset &dataset){
     return minCost;
 }
 
-double Node::RecurLearn(Dataset & dataset){
-    double minCost = this->SplitNode(dataset);
+double xNode::RecurLearn(Dataset & dataset){
+    double minCost = this->SplitxNode(dataset);
     //未选择特征
     if(this->featId == -1) return minCost;
     //达到最大树高
     if(this->level >= 8) return minCost;
-    cout<<this->featId<<endl;
     
     float leftThr = this->threshold1;
     float rightThr = this->threshold2;
@@ -151,8 +150,8 @@ double Node::RecurLearn(Dataset & dataset){
     int nPos = (int)this->pInd.size();
     int nNeg = (int)this->nInd.size();
     //左右子树初始化
-    Node* lChild = new Node();
-    Node* rChild = new Node();
+    xNode* lChild = new xNode();
+    xNode* rChild = new xNode();
     
     lChild->Init(this->leftFit, minLeaf);
     lChild->level = this->level + 1;
@@ -222,7 +221,7 @@ void DQT::CreateTree(Dataset &dataset,vector<int>& pInd, vector<int> &nInd,
     this->Init_tree(pInd, nInd, minLeaf);
     this->LearnDQT(dataset);
 }
-void DQT::ReleaseSpace(Node *node){
+void DQT::ReleaseSpace(xNode *node){
     if(node->lChild == NULL && node->rChild == NULL){
         delete node;
         return ;
@@ -237,7 +236,7 @@ void DQT::ReleaseSpace(Node *node){
     return ;
 }
 
-void Node::Init(float parentFit, int minLeaf_){
+void xNode::Init(float parentFit, int minLeaf_){
     this->parentFit = parentFit;
     featId = -1;
     threshold1 = -1;
@@ -261,7 +260,7 @@ void DQT::CalcuThreshold(Dataset &dataset){
     this->threshold = v[index];
 }
 
-double DQT::RecurTest(const cv::Mat& x, Node * node){
+double DQT::RecurTest(const cv::Mat& x, xNode * node){
     unsigned char * ptr = x.data;
     if(ptr[node->featId] < node->threshold1 || ptr[node->featId] > node->threshold2){
         if(node->lChild == NULL)
@@ -277,26 +276,26 @@ double DQT::RecurTest(const cv::Mat& x, Node * node){
     }
 }
 
-void DQT::RecurAddNode(vector<Node *> &vec, Node *node){
-    vec.push_back(node);
+void DQT::RecurAddxNode(vector<xNode *> &vec, xNode *node){
     if(node->lChild != NULL)
-        RecurAddNode(vec, node->lChild);
+        RecurAddxNode(vec, node->lChild);
+    vec.push_back(node);
     if(node->rChild != NULL)
-        RecurAddNode(vec, node->rChild);
+        RecurAddxNode(vec, node->rChild);
 }
 void DQT::SaveTree(char *fileName, int ID){
-    vector<Node *> vec;
-    vec = LinkNodeToVec();
+    vector<xNode *> vec;
+    vec = LinkxNodeToVec();
     cout<<"This DQT contains "<<(int)vec.size()<<" nodes"<<endl;
     pugi::xml_document doc;
     doc.load_file(fileName);
     
     pugi::xml_node tree = doc.append_child("Tree");
-    tree.append_attribute("ID") = ID;
+    tree.append_attribute("ID") = ID + 1;
     tree.append_attribute("threshold") = this->threshold;
-    for(vector<Node*>::iterator it = vec.begin(); it != vec.end(); it++){
-        pugi::xml_node node = tree.append_child("Node");
-        node.append_attribute("ID") = (*it)->ID;
+    for(vector<xNode*>::iterator it = vec.begin(); it != vec.end(); it++){
+        pugi::xml_node node = tree.append_child("xNode");
+        node.append_attribute("ID") = (*it)->ID + 1;
         node.append_attribute("leftFit") = (*it)->leftFit;
         node.append_attribute("rightFit") = (*it)->rightFit;
         node.append_attribute("threshold1") = (*it)->threshold1;
@@ -305,9 +304,9 @@ void DQT::SaveTree(char *fileName, int ID){
     }
     doc.save_file(fileName);
 }
-vector<Node*> DQT::LinkNodeToVec(){
-    vector<Node*> vec;
-    RecurAddNode(vec, root);
+vector<xNode*> DQT::LinkxNodeToVec(){
+    vector<xNode*> vec;
+    RecurAddxNode(vec, root);
     return vec;
 }
 double DQT::TestMyself(const cv::Mat& x){
