@@ -78,7 +78,8 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
         for (int i = 0; i < int(weakClassifier.size()); i++) {
             far *= weakClassifier[i]->FAR;
         }
-        cout<<"Weak classifier " << T <<" FAR: "<<far;
+        cout<<"Weak classifier " << T <<" FAR: "<<far<<endl;
+
         
         if (far <= para.MAXFAR || T >= para.max_stage || finished) {
             printf("\n\nThe detector training is finished.\n");
@@ -167,7 +168,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             << t << ". nNegPass = " << dataset.nNeg << endl;
             break;
         }
-        
+       cout<<"***********************************"<<endl; 
         //选取部分正负样本作为根节点的输入样本。
         int nPosSam = max((int)round(dataset.nPos* para.samFrac), para.minSamples);
         vector<int> posIndex(dataset.nPos);
@@ -212,7 +213,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         dataset.nInd.swap(temNegPassIndex);
         dataset.nNeg = (int)dataset.nInd.size();
         tree->FAR = (float)(dataset.nNeg * 1.0 / nNegPass);
-        cout<<"The FAR of this tree is "<<tree->FAR;
+        cout<<"The FAR of this tree is "<<tree->FAR<<endl;
 	nNegPass = dataset.nNeg;
         tree->SaveTree(para.modelName, t);
         weakClassifier.push_back(tree);

@@ -278,9 +278,9 @@ double DQT::RecurTest(const cv::Mat& x, xNode * node){
 }
 
 void DQT::RecurAddxNode(vector<xNode *> &vec, xNode *node){
-    vec.push_back(node);
     if(node->lChild != NULL)
         RecurAddxNode(vec, node->lChild);
+    vec.push_back(node);
     if(node->rChild != NULL)
         RecurAddxNode(vec, node->rChild);
 }
@@ -292,11 +292,11 @@ void DQT::SaveTree(char *fileName, int ID){
     doc.load_file(fileName);
     
     pugi::xml_node tree = doc.append_child("Tree");
-    tree.append_attribute("ID") = ID;
+    tree.append_attribute("ID") = ID + 1;
     tree.append_attribute("threshold") = this->threshold;
     for(vector<xNode*>::iterator it = vec.begin(); it != vec.end(); it++){
         pugi::xml_node node = tree.append_child("xNode");
-        node.append_attribute("ID") = (*it)->ID;
+        node.append_attribute("ID") = (*it)->ID + 1;
         node.append_attribute("leftFit") = (*it)->leftFit;
         node.append_attribute("rightFit") = (*it)->rightFit;
         node.append_attribute("threshold1") = (*it)->threshold1;

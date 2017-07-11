@@ -5,26 +5,41 @@ Prepare negtive samples
 The picture has been already enough done
 The number of negtive samples is 10000
 Prepare bootstrap samples
- done
-The number of bootstrapImage samples is 9559
+The picture has been already enough done
+The number of bootstrapImage samples is 25000
 After bootstrap :10000
+***********************************
 Before trim the num of posIndex is 10000
 Before trim the num of negIndex is 10000
 The minLeaf at this stage is 200
-Iter 0: nPos=10000, nNeg=10000, The FAR of this tree is 0.1973This DQT contains 26 nodes
+Iter 0: nPos=10000, nNeg=10000, The FAR of this tree is 0.1973
+This DQT contains 26 nodes
 FAR at 0 stage is 19.73%
 
 
 No enough negative samples. The AdaBoost learning terminates at iteration 0. nNegPass = 1973.
 The adaboost training is finished at inner cycle.
-Weak classifier 1 FAR: 0.1973Bootstrap negtive samples
+Weak classifier 1 FAR: 0.1973
+Bootstrap negtive samples
 Done
-After bootstrap :3946
+After bootstrap :10000
 Test current model
-Warning: some negative samples cannot pass all stages, pass rate is 0.0673
-
-No enough negative samples. The Adaboost learning terninates at iteration 1. nNegPass = 673
-The adaboost training is finished at inner cycle.
-
-
-No effective features for further detector learning.
+Warning: some negative samples cannot pass all stages, pass rate is 0.5119
+***********************************
+Before trim the num of posIndex is 10000
+Before trim the num of negIndex is 5119
+The minLeaf at this stage is 149
+Iter 1: nPos=10000, nNeg=4916, The FAR of this tree is 0.810901
+This DQT contains 27 nodes
+FAR at 1 stage is 15.9991%
+***********************************
+Before trim the num of posIndex is 10000
+Before trim the num of negIndex is 4151
+The minLeaf at this stage is 137
+Iter 2: nPos=10000, nNeg=3690, The FAR of this tree is 0.901951
+This DQT contains 29 nodes
+FAR at 2 stage is 14.4304%
+***********************************
+Before trim the num of posIndex is 10000
+Before trim the num of negIndex is 3744
+The minLeaf at this stage is 133

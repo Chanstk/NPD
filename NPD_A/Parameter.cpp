@@ -4,7 +4,7 @@ void Parameter::paraDefine(){
     MINDR =  1;
     MAXFAR = 1e-3;
     tree_level = 8;
-    max_stage = 200;
+    max_stage = 15;
     obj_size = 20;
     finalNegs = 1000;
     minSamples = 1000;
@@ -20,7 +20,7 @@ void Parameter::paraDefine(){
     maxWeight = 100;		// maximal sample weight in AdaBoost; used to ensure numerical stability.
     numThreads = 10;		// the number of computing threads in tree learning
     numPosSample = 10000;
-    bootNum = 10000;
+    bootNum = 25000;
     modelName = "Tree.xml";
 }
 
