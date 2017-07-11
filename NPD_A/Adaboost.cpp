@@ -146,6 +146,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
                 dataset.negFit[i] = negFit[i];
             }
         }
+        
         dataset.nNeg = (int)dataset.nInd.size();
         if (nNeg > dataset.nInd.size()) {
             cout << "Warning: some negative samples cannot pass all stages, pass rate is "
@@ -161,7 +162,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
     
     int nNegPass = dataset.nNeg;
     for(int t = T; t < para.max_stage; t++){
-        if(dataset.nNeg < para.minSamples){
+        if(dataset.nNeg <= para.minSamples){
             cout << endl << "No enough negative samples. The Adaboost learning terninates at iteration "
             << t << ". nNegPass = " << dataset.nNeg << endl;
             break;
@@ -188,7 +189,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         nNegSam = (int)negIndex.size();
         
         int minLeaf_t = max( (int)round((nPosSam+nNegSam)* para.minLeafFrac), para.minLeaf);
-        
+        cout<<"THe minLeft at this stage is " <<minLeaf_t;
         
         printf("\nIter %d: nPos=%d, nNeg=%d, ", t, nPosSam, nNegSam);
         
@@ -198,7 +199,9 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             printf("\n\nNo available features to satisfy the split. The AdaBoost learning terminates.\n");
             break;
         }
+        
         tree->CalcuThreshold(dataset);
+        
         vector<int> temNegPassIndex;
         for (int i = 0; i < int(dataset.nNeg); i++){
             dataset.negFit[dataset.nInd[i]] += tree->TestMyself(dataset.nSam.row(dataset.nInd[i]));
