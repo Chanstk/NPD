@@ -23,7 +23,7 @@ void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName
     string imageName;
     while (getline(file, imageName))
     {
-        cv::Mat image = cv::imread(imageName.c_str(),0);
+        cv::Mat image = cv::imread(imageName.c_str(),CV_LOAD_IMAGE_GRAYSCALE);
         if(image.empty())
         {
             printf("empty file path:%s\n", imageName.c_str());
