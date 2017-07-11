@@ -1,0 +1,304 @@
+Prepare postive samples
+The picture has been already enough done
+The number of postvie samples is 10000
+Prepare negtive samples
+The picture has been already enough done
+The number of negtive samples is 10000
+Prepare bootstrap samples
+ done
+The number of bootstrapImage samples is 9559
+Prepare postive samples
+The picture has been already enough done
+The number of postvie samples is 10000
+Prepare negtive samples
+The picture has been already enough done
+The number of negtive samples is 10000
+Prepare bootstrap samples
+ done
+The number of bootstrapImage samples is 9559
+
+Iter 0: nPos=10000, nNeg=10000, 11910
+77334
+35249
+59297
+8551
+29891
+563
+30093
+35565
+425
+49862
+15827
+78988
+77334
+59297
+35249
+63869
+33135
+48384
+32522
+33193
+77027
+79503
+41019
+29799
+This DQT contains 26 nodes
+FAR at 0 stage is 19.73%
+
+Iter 1: nPos=10000, nNeg=1776, 8173
+30405
+31343
+32541
+22950
+32272
+79384
+10979
+76145
+79799
+11281
+60100
+49912
+32848
+54324
+69712
+77404
+21583
+67570
+31068
+53111
+79780
+78594
+79778
+27797
+37333
+This DQT contains 27 nodes
+FAR at 1 stage is 19.73%
+
+Iter 2: nPos=10000, nNeg=1800, 12277
+32868
+31322
+73261
+9316
+30049
+32253
+803
+10915
+79799
+11795
+76955
+48433
+35249
+16184
+77473
+79797
+22948
+8169
+32251
+79799
+10852
+77334
+29784
+79647
+This DQT contains 26 nodes
+FAR at 2 stage is 19.73%
+
+Iter 3: nPos=10000, nNeg=1709, 8174
+77473
+73376
+77493
+66269
+77263
+29397
+55929
+28119
+69647
+32887
+30972
+59297
+47280
+29795
+59499
+11758
+30424
+77423
+78832
+63346
+75431
+21603
+50216
+21553
+29788
+This DQT contains 27 nodes
+FAR at 3 stage is 18.56%
+
+Iter 4: nPos=10000, nNeg=1498, 7044
+32868
+45625
+32561
+30991
+77541
+32273
+8551
+49785
+29100
+77404
+10495
+44185
+79428
+27797
+60297
+22591
+11224
+76230
+5242
+69681
+77404
+691
+29924
+This DQT contains 25 nodes
+FAR at 4 stage is 18.56%
+
+Iter 5: nPos=10000, nNeg=1432, 10452
+74444
+35609
+31323
+12161
+49825
+9210
+69720
+62965
+77404
+77424
+4672
+15539
+52701
+46389
+10978
+79796
+63869
+11078
+64417
+79798
+601
+29794
+39898
+77404
+39896
+This DQT contains 27 nodes
+FAR at 5 stage is 16.37%
+
+Iter 6: nPos=10000, nNeg=1253, 22611
+75887
+7421
+74361
+32581
+31051
+37351
+11678
+70348
+70252
+54776
+32274
+4874
+24871
+62895
+11225
+77333
+50397
+79790
+33745
+14573
+12563
+7186
+This DQT contains 26 nodes
+FAR at 6 stage is 15.65%
+
+Iter 7: nPos=10000, nNeg=1166, 406
+76954
+12278
+30659
+30972
+12047
+32214
+31597
+60757
+15539
+45102
+29625
+77334
+28205
+32848
+79756
+31944
+28234
+7120
+79792
+34047
+79799
+68644
+0
+This DQT contains 26 nodes
+FAR at 7 stage is 15.44%
+
+Iter 8: nPos=10000, nNeg=1109, 424
+69647
+30090
+14211
+75675
+67397
+77473
+29924
+27797
+54755
+27886
+14210
+67882
+74255
+59499
+11638
+66221
+12415
+11775
+32829
+77334
+21584
+9959
+21243
+This DQT contains 25 nodes
+FAR at 8 stage is 14.81%
+
+Iter 9: nPos=10000, nNeg=1045, 8174
+73263
+77424
+77473
+51359
+11310
+71835
+8551
+30973
+10912
+79790
+64484
+41019
+71821
+29918
+14574
+10949
+8313
+32561
+31362
+31368
+79788
+77403
+11328
+45627
+19886
+30698
+79790
+This DQT contains 29 nodes
+FAR at 9 stage is 14.2%
+
+Iter 10: nPos=10000, nNeg=988, 28194
+32868
+31323
+51359

@@ -11,38 +11,42 @@
 #include "Dataset.h"
 #define Adaboost_hpp
 using namespace std;
-class Node{
+namespace selfxNode{
+class xNode{
 public:
     int ID;
     float leftFit, rightFit, threshold1, threshold2, score, parentFit;
     int featId, level, minLeaf;
     vector<int> pInd, nInd;
-    Node * lChild, *rChild;
-    double SplitNode(Dataset & dataset);
+    xNode * lChild, *rChild;
+    double SplitxNode(Dataset & dataset);
     void Init(float parentFit, int minLeaf_);
     double RecurLearn(Dataset & dataset);
 };
+
+}
+using namespace selfxNode;
 
 class DQT{
 public:
     float threshold;
     float FAR;
-    Node * root;
+    xNode * root;
     void CreateTree(Dataset &dataset,vector<int>& pInd, vector<int> &nInd,
                     int minLeaf);
     void Init_tree(vector<int>& pInd,
                    vector<int>& nInd,
                    int minLeaf);
     void LearnDQT(Dataset & dataset);
-    void ReleaseSpace(Node *node);
+    void ReleaseSpace(xNode *node);
     void CalcuThreshold(Dataset &dataset);
     double TestMyself(const cv::Mat& x);
-    double RecurTest(const cv::Mat& x, Node * node);
+    double RecurTest(const cv::Mat& x, xNode * node);
     //TODO
-    void CaucultNode();
+    void CaucultxNode();
     void SaveTree(char * fileName, int ID);
-    vector<Node*> LinkNodeToVec();
-    void RecurAddNode(vector<Node*>& vec, Node* node);
+    vector< xNode*> LinkxNodeToVec();
+    void RecurAddxNode(vector< xNode*>& vec, xNode* node);
 };
 
 class Adaboost{

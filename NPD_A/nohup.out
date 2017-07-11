@@ -1,0 +1,30 @@
+Prepare postive samples
+The picture has been already enough done
+The number of postvie samples is 10000
+Prepare negtive samples
+The picture has been already enough done
+The number of negtive samples is 10000
+Prepare bootstrap samples
+ done
+The number of bootstrapImage samples is 9559
+After bootstrap :10000
+Before trim the num of posIndex is 10000
+Before trim the num of negIndex is 10000
+The minLeaf at this stage is 200
+Iter 0: nPos=10000, nNeg=10000, The FAR of this tree is 0.1973This DQT contains 26 nodes
+FAR at 0 stage is 19.73%
+
+
+No enough negative samples. The AdaBoost learning terminates at iteration 0. nNegPass = 1973.
+The adaboost training is finished at inner cycle.
+Weak classifier 1 FAR: 0.1973Bootstrap negtive samples
+Done
+After bootstrap :3946
+Test current model
+Warning: some negative samples cannot pass all stages, pass rate is 0.0673
+
+No enough negative samples. The Adaboost learning terninates at iteration 1. nNegPass = 673
+The adaboost training is finished at inner cycle.
+
+
+No effective features for further detector learning.
