@@ -315,6 +315,6 @@ vector<xNode*> DQT::LinkxNodeToVec(){
     return vec;
 }
 double DQT::TestMyself(const cv::Mat& x){
-    return RecurTest(x, this->root);
+	return RecurTest(x, this->root);
 }
 
