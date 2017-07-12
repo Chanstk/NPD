@@ -142,7 +142,7 @@ double xNode::RecurLearn(Dataset & dataset){
     //未选择特征
     if(this->featId == -1) return minCost;
     //达到最大树高
-    if(this->level >= 8) return minCost;
+    if(this->level >= para.tree_level) return minCost;
     
     float leftThr = this->threshold1;
     float rightThr = this->threshold2;
@@ -256,6 +256,11 @@ void DQT::CalcuThreshold(Dataset &dataset){
         v.push_back(dataset.posFit[dataset.pInd[i]]);
     }
     sort(v.begin(), v.end());
+    for(int i = 0; i < (int)v.size(); i++)
+    	if( i % 100 == 0)
+	    cout<<v[i]<<" ";
+    
+    cout<<endl;
     int index = max((int)floor(dataset.nPos*(1- para.MINDR)), 0);
     this->threshold = v[index];
 }

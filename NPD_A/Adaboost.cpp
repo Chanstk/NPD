@@ -230,7 +230,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             printf("\n\nThe training is converged at iteration %d. FAR = %.2f%%\n", t, FAR * 100);
             break;
         }
-        if (nNegPass <= primNegNumber * para.minNegRatio || nNegPass <= para.minSamples) {
+        if (nNegPass <= dataset.nPos * para.minNegRatio || nNegPass <= para.minSamples) {
             printf("\n\nNo enough negative samples. The AdaBoost learning terminates at iteration %d. nNegPass = %d.\n", t, nNegPass);
             break;
         }
