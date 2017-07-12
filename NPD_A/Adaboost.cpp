@@ -193,15 +193,10 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         nNegSam = (int)negIndex.size();
         
         int minLeaf_t = max( (int)round((nPosSam+nNegSam)* para.minLeafFrac), para.minLeaf);
-<<<<<<< HEAD
-        cout<<"THe minLeft at this stage is " <<minLeaf_t;
         
-        printf("\nIter %d: nPos=%d, nNeg=%d, ", t, nPosSam, nNegSam);
-=======
         
  	cout<<"The minLeaf at this stage is "<<minLeaf_t<<endl;       
         printf("Iter %d: nPos=%d, nNeg=%d, ", t, nPosSam, nNegSam);
->>>>>>> origin/master
         
         DQT *tree = new DQT();
         tree->CreateTree(dataset,posIndex, negIndex, minLeaf_t);
