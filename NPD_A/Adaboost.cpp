@@ -41,14 +41,13 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
     int numFaces = dataset.nPos;
     int desiredNumNegs = numFaces * para.negRatio;
     while(true){
-        //TOOD
         //负样本bootstrap
         int needNumNegs = desiredNumNegs - dataset.nNeg;
         if(needNumNegs > 0){
-	   cout<<"Bootstrap negtive samples"<<endl;
+		    cout<<"Bootstrap negtive samples"<<endl;
             dataset.AddNegSam(needNumNegs);
-	}
-	cout<<"After bootstrap :"<<dataset.nNeg<<endl;
+			cout<<"After bootstrap :"<<dataset.nNeg<<endl;
+		}
         //负样本不够，退出
         T = (int)weakClassifier.size();
         if(dataset.nNeg < para.finalNegs){
@@ -218,7 +217,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         dataset.nInd.swap(temNegPassIndex);
         dataset.nNeg = (int)dataset.nInd.size();
         tree->FAR = (float)(dataset.nNeg * 1.0 / nNegPass);
-        cout<<"The FAR of this tree is "<<tree->FAR<<endl;
+        cout<<"The FAR of this tree is "<<tree->FAR * 100<<"%"<<endl;
 		nNegPass = dataset.nNeg;
         tree->SaveTree(para.modelName, t);
         weakClassifier.push_back(tree);

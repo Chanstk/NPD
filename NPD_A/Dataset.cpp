@@ -212,9 +212,14 @@ void Dataset::AddNegSam(int numOfSam){
 			int rnd = rand() % (int) bootStrapImages.size();
 			int x = rand % (bootStrapImages[rnd].cols - para.obj_size);
 			int y = rand % (bootStrapImages[rnd].rows - para.obj_size);
-		 	cv::Mat im = bootStrapImages[rnd](Rect(x, y, para.obj_size, para.objsize));	
-            uchar* addr = im.data;
-
+		 	cv::Mat im = bootStrapImages[rnd](Rect(x, y, para.obj_size, para.obj_size));	
+            
+			uchar* addr = im.data;
+			cout<<"test pi"<<endl;
+			for(int i = 0; i < 20; i++){
+				cout<<*(addr + i)<<" ";
+			}
+			cout<<endl;
             for (int k = 0; k < pixels; k++) {
                 //TODO
                 addr = im.data + k;
@@ -261,3 +266,4 @@ void Dataset::initSamples()
 //	initWeight(nNeg, nweight);
 	return ;
 }
+
