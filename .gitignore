@@ -4,3 +4,6 @@ pos/
 opencvlib/
 *.o
 *.jpg
+*.zip
+*.xml
+*.out
