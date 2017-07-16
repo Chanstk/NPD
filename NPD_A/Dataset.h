@@ -25,7 +25,7 @@ public:
 	Mat npdTable;
 	public:
 	Dataset(char*, char*, char*);
-	void readImage(vector<Mat>&, int, char*);
+	void readImage(vector<Mat>&, int, char*,int);
 	void calculateFea(Mat&, const vector<Mat>&, const int&);
 	void calculateNpdTable();
 	void initWeight(int nPos, int nNeg);

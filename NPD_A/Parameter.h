@@ -12,7 +12,6 @@ class Parameter {
     int finalNegs;
     int minSamples;
     float negRatio;
-    int windSize;
     char* modelName;
     // minimal fraction of negative samples required to remain,
     

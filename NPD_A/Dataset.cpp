@@ -16,7 +16,7 @@ Dataset::Dataset(char *pf, char *nf, char *bf):npdTable(256, 256, 1)
 	return ;
 }
 
-void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName)
+void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName, int boot)
 {
     int count = 0;
     ifstream file(fileName);
@@ -29,11 +29,12 @@ void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName
             printf("empty file path:%s\n", imageName.c_str());
             continue;
         }
-        
+       if(!boot){ 
         if (image.cols != para.windSize || image.rows != para.windSize)
         {
             cv::resize(image, image, cv::Size(para.windSize, para.windSize));
         }
+	   }
         images.push_back(image);
         count++;
         if(count >= num_of_sams){
@@ -198,13 +199,9 @@ void Dataset::CalcuWeight(){
 }
 
 void Dataset::AddNegSam(int numOfSam){
-    if(bootStrapImages.size() == 0){
-        cout<<"not enough images for bootstrap"<<endl;
-        return;
-    }
     float a = nInd.size();
     int count = 0;
-    int pixels = para.windSize * para.windSize;
+    int pixels = para.obj_size * para.obj_size;
     vector<int> formNInd(nInd);
     for(int i = 0; i < nSam.rows; i++){
         //如果该负样本已经无效
@@ -212,22 +209,22 @@ void Dataset::AddNegSam(int numOfSam){
             //替换原有负样本
             count++;
             int n = 0;
-            uchar* addr = (bootStrapImages[0]).data;
+			int rnd = rand() % (int) bootStrapImages.size();
+			int x = rand % (bootStrapImages[rnd].cols - para.obj_size);
+			int y = rand % (bootStrapImages[rnd].rows - para.obj_size);
+		 	cv::Mat im = bootStrapImages[rnd](Rect(x, y, para.obj_size, para.objsize));	
+            uchar* addr = im.data;
+
             for (int k = 0; k < pixels; k++) {
                 //TODO
-                addr = bootStrapImages[0].data + k;
+                addr = im.data + k;
                 for (int j = k + 1; j < pixels; j++) {
                     nSam.at<uchar>(i, n++) = npdTable.at<uchar>(*addr, *(addr - k + j));
                 }
             }
-            bootStrapImages.erase(bootStrapImages.begin());
             nInd.push_back(i);
             nNeg++;
             nweight[i] = ((float)1) / a;
-        }
-        if(bootStrapImages.size() == 0){
-            cout<<"not enough images for bootstrap"<<endl;
-            break;
         }
     }
     for(int i = 0; i < formNInd.size(); i++)
@@ -237,21 +234,20 @@ void Dataset::AddNegSam(int numOfSam){
         sum += nweight[nInd[i]];
     for(int i = 0; i < nInd.size(); i++)
         nweight[nInd[i]] /= sum;
-    cout<<"Done"<<endl;
+    cout<<"Bootstrap Done"<<endl;
     return;
-    
 }
 void Dataset::initSamples()
 {
 	calculateNpdTable();
     cout<<"Prepare postive samples"<<endl;
-	readImage(p_images, para.numPosSample, pfile);
+	readImage(p_images, para.numPosSample, pfile, 0);
     cout<<"The number of postvie samples is "<<p_images.size()<<endl;
     cout<<"Prepare negtive samples"<<endl;
-	readImage(n_images, para.numPosSample * para.negRatio, nfile);
+	readImage(n_images, para.numPosSample * para.negRatio, nfile,0);
         cout<<"The number of negtive samples is "<<n_images.size()<<endl;
     cout<<"Prepare bootstrap samples"<<endl;
-    readImage(bootStrapImages, para.bootNum, bootFile);
+    readImage(bootStrapImages, para.bootNum, bootFile,1);
         cout<<"The number of bootstrapImage samples is "<<bootStrapImages.size()<<endl;
 	calculateFea(pSam, p_images, para.numPosSample);
     for(int i = 0; i < (int)pSam.rows; i++)

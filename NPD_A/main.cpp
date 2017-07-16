@@ -12,6 +12,7 @@
 extern Parameter para = Parameter();
 int main(int argc, const char * argv[]) {
     para.paraDefine();
+	srand((int)time(0));
     Dataset dataset("pos.txt", "neg.txt", "boot.txt");
     dataset.initSamples();
     Adaboost *adaboost = new Adaboost();
