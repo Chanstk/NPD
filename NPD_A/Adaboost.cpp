@@ -131,6 +131,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
                 dataset.posFit[i] = posFit[i];
             }
         }
+        
         dataset.nPos = (int)dataset.pInd.size();
         if (dataset.pInd.size() < nPos) {
             cout << "Warning: some positive samples cannot pass all stages. pass rate is "
@@ -156,11 +157,11 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         }
         
         //重新计算样本权值
-        dataset.CalcuWeight();
+        
         dataset.CalcuWeight();
             
     }else
-        dataset.initWeight(nPos, nNeg);
+        dataset.initWeight(nPos_, nNeg_);
     int primNegNumber = dataset.nNeg; 
     int nNegPass = dataset.nNeg;
     for(int t = T; t < para.max_stage; t++){
@@ -186,22 +187,19 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         random_shuffle(negIndex.begin(), negIndex.end());
         negIndex.resize(nNegSam);
         //TODO
-	cout<<"Before trim the num of posIndex is "<<posIndex.size()<<endl;
-	cout<<"Before trim the num of negIndex is "<<negIndex.size()<<endl;
+		cout<<"Before trim the num of posIndex is "<<posIndex.size()<<endl;
+		cout<<"Before trim the num of negIndex is "<<negIndex.size()<<endl;
         dataset.TrimWeight(posIndex, negIndex);
         nPosSam = (int)posIndex.size();
         nNegSam = (int)negIndex.size();
         
         int minLeaf_t = max( (int)round((nPosSam+nNegSam)* para.minLeafFrac), para.minLeaf);
-<<<<<<< HEAD
-        cout<<"THe minLeft at this stage is " <<minLeaf_t;
+
+
         
-        printf("\nIter %d: nPos=%d, nNeg=%d, ", t, nPosSam, nNegSam);
-=======
-        
- 	cout<<"The minLeaf at this stage is "<<minLeaf_t<<endl;       
+        cout<<"The minLeaf at this stage is "<<minLeaf_t<<endl;
         printf("Iter %d: nPos=%d, nNeg=%d, ", t, nPosSam, nNegSam);
->>>>>>> origin/master
+
         
         DQT *tree = new DQT();
         tree->CreateTree(dataset,posIndex, negIndex, minLeaf_t);
@@ -223,7 +221,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         dataset.nNeg = (int)dataset.nInd.size();
         tree->FAR = (float)(dataset.nNeg * 1.0 / nNegPass);
         cout<<"The FAR of this tree is "<<tree->FAR<<endl;
-	nNegPass = dataset.nNeg;
+		nNegPass = dataset.nNeg;
         tree->SaveTree(para.modelName, t);
         weakClassifier.push_back(tree);
         double FAR = 1;
