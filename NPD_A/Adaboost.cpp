@@ -194,8 +194,6 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         nNegSam = (int)negIndex.size();
         
         int minLeaf_t = max( (int)round((nPosSam+nNegSam)* para.minLeafFrac), para.minLeaf);
-
-
         
         cout<<"The minLeaf at this stage is "<<minLeaf_t<<endl;
         printf("Iter %d: nPos=%d, nNeg=%d, ", t, nPosSam, nNegSam);
@@ -233,7 +231,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             printf("\n\nThe training is converged at iteration %d. FAR = %.2f%%\n", t, FAR * 100);
             break;
         }
-        if (nNegPass <= primNegNumber * para.minNegRatio || nNegPass <= para.minSamples) {
+        if (nNegPass <= dataset.nPos * para.minNegRatio || nNegPass <= para.minSamples) {
             printf("\n\nNo enough negative samples. The AdaBoost learning terminates at iteration %d. nNegPass = %d.\n", t, nNegPass);
             break;
         }

@@ -1,14 +1,12 @@
 #include"Parameter.h"
 
 void Parameter::paraDefine(){
-    MINDR =  1;
+    MINDR =  0.97;
     MAXFAR = 1e-3;
     tree_level = 8;
-    max_stage = 10000;
+    max_stage = 1000;
     obj_size = 20;
     finalNegs = 1000;
-
-
     minSamples = 1000;
     negRatio = 1;
     windSize = 20;
