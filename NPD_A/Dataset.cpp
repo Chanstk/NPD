@@ -16,7 +16,7 @@ Dataset::Dataset(char *pf, char *nf, char *bf):npdTable(256, 256, 1)
 	return ;
 }
 
-void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName, int boot)
+void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName, int neg)
 {
     int count = 0;
     ifstream file(fileName);
@@ -29,7 +29,7 @@ void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName
             printf("empty file path:%s\n", imageName.c_str());
             continue;
         }
-       if(!boot){ 
+       if(!neg){ 
         if (image.cols != para.windSize || image.rows != para.windSize)
         {
             cv::resize(image, image, cv::Size(para.windSize, para.windSize));
@@ -62,16 +62,32 @@ void Dataset::calculateNpdTable()
 	return ;
 }
 
-void Dataset::calculateFea(Mat& sam, const vector<Mat>& images, const int& num)
+void Dataset::calculateFea(Mat& sam, const vector<Mat>& images, const int& num,int neg)
 {
     int pixels = para.windSize * para.windSize;
     sam = Mat(num, pixels * (pixels - 1) / 2, CV_8UC1);  //20 * 20;
 	for (int k = 0; k < num; k++) {
 		int n = 0;
-		uchar* addr = (images[k]).data;
+		uchar* addr;
+		Mat img;
+		if(!neg)
+			//if the images are postive samples
+			img = images[k];
+		else{
+			//extract neg sample randomly
+			int rnd = rand() % (int) images.size();
+			int x = rand() % (images[rnd].cols - para.obj_size);
+			int y = rand() % (images[rnd].rows - para.obj_size);
+			img = images[rnd](Rect(x ,y ,para.obj_size, para.obj_size));
+			cout<<"test initial neg sample"<<endl;
+			for(int i = 0; i < 20; i++){
+				cout<<*(img.data + i)<<" ";
+			}
+			cout<<endl;
+		}
 		for (int i = 0; i < pixels; i++) {
             //TODO
-			addr = images[k].data + i;
+			addr = img.data + i;
 			for (int j = i + 1; j < pixels; j++) {
 				sam.at<uchar>(k, n++) = npdTable.at<uchar>(*addr, *(addr - i + j));
                 
@@ -209,10 +225,10 @@ void Dataset::AddNegSam(int numOfSam){
             //替换原有负样本
             count++;
             int n = 0;
-			int rnd = rand() % (int) bootStrapImages.size();
-			int x = rand % (bootStrapImages[rnd].cols - para.obj_size);
-			int y = rand % (bootStrapImages[rnd].rows - para.obj_size);
-		 	cv::Mat im = bootStrapImages[rnd](Rect(x, y, para.obj_size, para.obj_size));	
+			int rnd = rand() % (int) n_images.size();
+			int x = rand % (n_images[rnd].cols - para.obj_size);
+			int y = rand % (n_images[rnd].rows - para.obj_size);
+		 	cv::Mat im =n_images[rnd](Rect(x, y, para.obj_size, para.obj_size));	
             
 			uchar* addr = im.data;
 			cout<<"test pi"<<endl;
@@ -248,18 +264,19 @@ void Dataset::initSamples()
     cout<<"Prepare postive samples"<<endl;
 	readImage(p_images, para.numPosSample, pfile, 0);
     cout<<"The number of postvie samples is "<<p_images.size()<<endl;
+
     cout<<"Prepare negtive samples"<<endl;
-	readImage(n_images, para.numPosSample * para.negRatio, nfile,0);
+	readImage(n_images, para.numPosSample * para.negRatio, nfile,1);
         cout<<"The number of negtive samples is "<<n_images.size()<<endl;
-    cout<<"Prepare bootstrap samples"<<endl;
-    readImage(bootStrapImages, para.bootNum, bootFile,1);
-        cout<<"The number of bootstrapImage samples is "<<bootStrapImages.size()<<endl;
-	calculateFea(pSam, p_images, para.numPosSample);
+
+	calculateFea(pSam, p_images, para.numPosSample,0);
     for(int i = 0; i < (int)pSam.rows; i++)
         pInd.push_back(i);
-    calculateFea(nSam, n_images, para.numPosSample * para.negRatio);
+
+    calculateFea(nSam, n_images, para.numPosSample * para.negRatio,1);
     for(int i = 0; i < (int)nSam.rows; i++)
         nInd.push_back(i);
+
     nPos = (int)pInd.size();
     nNeg = (int)nInd.size();
 //	initWeight(nPos, pweight);
