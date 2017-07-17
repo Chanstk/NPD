@@ -206,15 +206,20 @@ void Dataset::AddNegSam(int numOfSam){
     int count = 0;
     int pixels = para.windSize * para.windSize;
     vector<int> formNInd(nInd);
+    srand((int)time(0));
     for(int i = 0; i < nSam.rows; i++){
         //如果该负样本已经无效
         if(find(nInd.begin(), nInd.end(), i)== nInd.end()){
             //替换原有负样本
             count++;
             int n = 0;
-            uchar* addr = (bootStrapImages[0]).data;
+	    //randomseletc neg pic
+	    int rnd = rand() % (int)bootStrapImages.size();
+	    
+	    cv::Mat img;
+	    
+            uchar* addr =img.data;
             for (int k = 0; k < pixels; k++) {
-                //TODO
                 addr = bootStrapImages[0].data + k;
                 for (int j = k + 1; j < pixels; j++) {
                     nSam.at<uchar>(i, n++) = npdTable.at<uchar>(*addr, *(addr - k + j));

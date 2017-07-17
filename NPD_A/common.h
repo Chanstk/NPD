@@ -20,6 +20,7 @@
 #include<opencv2/imgcodecs.hpp>
 #include<opencv2/imgproc/imgproc.hpp>
 #include "pugixml.hpp"
+#include<time.h>
 #define common_h
 typedef unsigned char uchar;
 using namespace std;
