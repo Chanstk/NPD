@@ -154,9 +154,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             cout << "Warning: some negative samples cannot pass all stages, pass rate is "
             << ((dataset.nInd.size())/(double)(nNeg)) << endl;
         }
-        
-        //重新计算样本权值
-        
+        //重新计算样本权值        
         dataset.CalcuWeight();
             
     }else
