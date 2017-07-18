@@ -79,11 +79,6 @@ void Dataset::calculateFea(Mat& sam, const vector<Mat>& images, const int& num,i
 			int x = rand() % (images[rnd].cols - para.obj_size);
 			int y = rand() % (images[rnd].rows - para.obj_size);
 			img = images[rnd](Rect(x ,y ,para.obj_size, para.obj_size));
-			cout<<"test initial neg sample"<<endl;
-			for(int i = 0; i < 20; i++){
-				cout<<*(img.data + i)<<" ";
-			}
-			cout<<endl;
 		}
 		for (int i = 0; i < pixels; i++) {
             //TODO
@@ -268,7 +263,7 @@ void Dataset::initSamples()
     for(int i = 0; i < (int)pSam.rows; i++)
         pInd.push_back(i);
 
-    calculateFea(nSam, n_images, para.numPosSample * para.negRatio,1);
+    calculateFea(nSam, n_images,n_images.size() ,1);
     for(int i = 0; i < (int)nSam.rows; i++)
         nInd.push_back(i);
 

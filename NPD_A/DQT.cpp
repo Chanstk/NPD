@@ -120,18 +120,19 @@ double xNode::SplitxNode(Dataset &dataset){
             }
         }
         if(thr0 == -1) continue;
-#pragma omp critical
         {
             if (minMSE <= minCost)
             {
-
+#pragma omp critical
+		 {
                 minCost = minMSE;
                 featId = i;
                 threshold1 = thr0;
                 threshold2 = thr1;
                 leftFit = fit0;
                 rightFit = fit1;
-            }
+		 }
+	       	 }
         }
     }
     return minCost;
@@ -256,9 +257,6 @@ void DQT::CalcuThreshold(Dataset &dataset){
         v.push_back(dataset.posFit[dataset.pInd[i]]);
     }
     sort(v.begin(), v.end());
-    for(int i = 0; i < (int)v.size(); i++)
-    	if( i % 100 == 0)
-	    cout<<v[i]<<" ";
     
     cout<<endl;
     int index = max((int)floor(dataset.nPos*(1- para.MINDR)), 0);
