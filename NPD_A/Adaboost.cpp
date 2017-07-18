@@ -41,14 +41,13 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
     int numFaces = dataset.nPos;
     int desiredNumNegs = numFaces * para.negRatio;
     while(true){
-        //TOOD
         //负样本bootstrap
         int needNumNegs = desiredNumNegs - dataset.nNeg;
         if(needNumNegs > 0){
-	   cout<<"Bootstrap negtive samples"<<endl;
+		    cout<<"Bootstrap negtive samples"<<endl;
             dataset.AddNegSam(needNumNegs);
-	}
-	cout<<"After bootstrap :"<<dataset.nNeg<<endl;
+			cout<<"After bootstrap :"<<dataset.nNeg<<endl;
+		}
         //负样本不够，退出
         T = (int)weakClassifier.size();
         if(dataset.nNeg < para.finalNegs){
@@ -131,6 +130,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
                 dataset.posFit[i] = posFit[i];
             }
         }
+        
         dataset.nPos = (int)dataset.pInd.size();
         if (dataset.pInd.size() < nPos) {
             cout << "Warning: some positive samples cannot pass all stages. pass rate is "
@@ -154,9 +154,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             cout << "Warning: some negative samples cannot pass all stages, pass rate is "
             << ((dataset.nInd.size())/(double)(nNeg)) << endl;
         }
-        
-        //重新计算样本权值
-        dataset.CalcuWeight();
+        //重新计算样本权值        
         dataset.CalcuWeight();
             
     }else
@@ -186,17 +184,17 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         random_shuffle(negIndex.begin(), negIndex.end());
         negIndex.resize(nNegSam);
         //TODO
-	cout<<"Before trim the num of posIndex is "<<posIndex.size()<<endl;
-	cout<<"Before trim the num of negIndex is "<<negIndex.size()<<endl;
+		cout<<"Before trim the num of posIndex is "<<posIndex.size()<<endl;
+		cout<<"Before trim the num of negIndex is "<<negIndex.size()<<endl;
         dataset.TrimWeight(posIndex, negIndex);
         nPosSam = (int)posIndex.size();
         nNegSam = (int)negIndex.size();
         
         int minLeaf_t = max( (int)round((nPosSam+nNegSam)* para.minLeafFrac), para.minLeaf);
         
-        
- 	cout<<"The minLeaf at this stage is "<<minLeaf_t<<endl;       
+        cout<<"The minLeaf at this stage is "<<minLeaf_t<<endl;
         printf("Iter %d: nPos=%d, nNeg=%d, ", t, nPosSam, nNegSam);
+
         
         DQT *tree = new DQT();
         tree->CreateTree(dataset,posIndex, negIndex, minLeaf_t);
@@ -217,8 +215,8 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         dataset.nInd.swap(temNegPassIndex);
         dataset.nNeg = (int)dataset.nInd.size();
         tree->FAR = (float)(dataset.nNeg * 1.0 / nNegPass);
-        cout<<"The FAR of this tree is "<<tree->FAR<<endl;
-	nNegPass = dataset.nNeg;
+        cout<<"The FAR of this tree is "<<tree->FAR * 100<<"%"<<endl;
+		nNegPass = dataset.nNeg;
         tree->SaveTree(para.modelName, t);
         weakClassifier.push_back(tree);
         double FAR = 1;

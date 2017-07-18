@@ -21,12 +21,12 @@ public:
 	char *pfile;
 	char *nfile;
     char *bootFile;
-	vector<Mat> p_images, n_images, bootStrapImages;
+	vector<Mat> p_images, n_images;
 	Mat npdTable;
 	public:
 	Dataset(char*, char*, char*);
-	void readImage(vector<Mat>&, int, char*);
-	void calculateFea(Mat&, const vector<Mat>&, const int&);
+	void readImage(vector<Mat>&, int, char*, int);
+	void calculateFea(Mat&, const vector<Mat>&, const int&, int);
 	void calculateNpdTable();
 	void initWeight(int nPos, int nNeg);
 	void initSamples();
