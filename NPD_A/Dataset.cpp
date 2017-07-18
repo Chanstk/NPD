@@ -88,12 +88,10 @@ void Dataset::initWeight(int nPos, int nNeg)
     this->nweight.clear();
     lengthOfPosW = nPos;
     lengthOfNegW = nNeg;
-    pInd.clear();
     for(int i = 0; i < nPos; i++){
         pweight.push_back((float)1.0 / nPos);
         posFit.push_back(0);
     }
-    nInd.clear();
     for(int i = 0; i < nNeg; i++){
         nweight.push_back((float)1.0 / nNeg);
         negFit.push_back(0);
@@ -253,11 +251,8 @@ void Dataset::initSamples()
 	readImage(p_images, para.numPosSample, pfile);
     cout<<"The number of postvie samples is "<<p_images.size()<<endl;
     cout<<"Prepare negtive samples"<<endl;
-	readImage(n_images, para.numPosSample * para.negRatio, nfile);
+	readImage(n_images,p_images.size() * para.negRatio, nfile);
         cout<<"The number of negtive samples is "<<n_images.size()<<endl;
-    cout<<"Prepare bootstrap samples"<<endl;
-    readImage(bootStrapImages, para.bootNum, bootFile);
-        cout<<"The number of bootstrapImage samples is "<<bootStrapImages.size()<<endl;
 	calculateFea(pSam, p_images, para.numPosSample);
     for(int i = 0; i < (int)pSam.rows; i++)
         pInd.push_back(i);
