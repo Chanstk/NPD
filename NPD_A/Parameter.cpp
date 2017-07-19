@@ -2,14 +2,14 @@
 
 void Parameter::paraDefine(){
     MINDR =  1;
-    MAXFAR = 1e-3;
-    tree_level = 8;
+    MAXFAR = 1e-5;
+    tree_level = 6;
     max_stage = 1000;
     obj_size = 20;
-    finalNegs = 1000;
-    minSamples = 1000;
-    negRatio = 1.5;
-    minNegRatio = 0.2;
+    finalNegs = 2000;
+    minSamples = 2000;
+    negRatio = 2;
+    minNegRatio = 0.222;
     trimFrac = 0.05;		// weight trimming in AdaBoost
     samFrac = 1.0;			// the fraction of samples randomly selected in each iteration
     // for training; could be used to avoid overfitting.

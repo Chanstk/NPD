@@ -115,7 +115,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
     vector<double> posFit, negFit;
     vector<int> passCount;
     int T = (int)weakClassifier.size();
-    if(T){
+    if(false){
         cout<<"Test current model"<<endl;
         //测试样本， dataset里面将未经过测试的样本剔除
         //测试正样本
@@ -157,7 +157,8 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         //重新计算样本权值        
         dataset.CalcuWeight();
             
-    }else
+    }
+    if(T==0)
         dataset.initWeight(nPos, nNeg);
     int primNegNumber = dataset.nNeg; 
     int nNegPass = dataset.nNeg;
@@ -212,11 +213,11 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
                 temNegPassIndex.push_back(dataset.nInd[i]);
         }
 
-        dataset.nInd.swap(temNegPassIndex);
-        dataset.nNeg = (int)dataset.nInd.size();
-        tree->FAR = (float)(dataset.nNeg * 1.0 / nNegPass);
+        //dataset.nInd.swap(temNegPassIndex);
+        //dataset.nNeg = (int)dataset.nInd.size();
+        tree->FAR = (float)(temNegPassIndex.size() * 1.0 / nNegPass);
         cout<<"The FAR of this tree is "<<tree->FAR * 100<<"%"<<endl;
-		nNegPass = dataset.nNeg;
+		nNegPass = temNegPassIndex.size();
         tree->SaveTree(para.modelName, t);
         weakClassifier.push_back(tree);
         double FAR = 1;
@@ -228,10 +229,10 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             printf("\n\nThe training is converged at iteration %d. FAR = %.2f%%\n", t, FAR * 100);
             break;
         }
-        if (nNegPass <= dataset.nPos * para.minNegRatio || nNegPass <= para.minSamples) {
+/*        if (nNegPass <= dataset.nPos * para.minNegRatio || nNegPass <= para.minSamples) {
             printf("\n\nNo enough negative samples. The AdaBoost learning terminates at iteration %d. nNegPass = %d.\n", t, nNegPass);
             break;
-        }
+        }*/
         dataset.CalcuWeight();
     }
     cout<<"The adaboost training is finished at inner cycle."<<endl;

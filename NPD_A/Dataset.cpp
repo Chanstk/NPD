@@ -38,7 +38,7 @@ void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName
         images.push_back(image);
         count++;
         if(count >= num_of_sams){
-            cout<<"The picture has been already enough";
+            cout<<"The picture has been already enough"<<endl;
             break;
         }
     }
@@ -79,6 +79,13 @@ void Dataset::calculateFea(Mat& sam, const vector<Mat>& images, const int& num,i
 			int x = rand() % (images[rnd].cols - para.obj_size);
 			int y = rand() % (images[rnd].rows - para.obj_size);
 			img = images[rnd](Rect(x ,y ,para.obj_size, para.obj_size));
+/*			string a = "./te/";
+			string b = ".jpg";
+			string c = std::to_string(k);
+			string d = a + c + b;
+			imwrite(d.c_str(),img);
+			if(k == 1000)
+				exit(0);*/
 		}
 		for (int i = 0; i < pixels; i++) {
             //TODO
@@ -250,16 +257,17 @@ void Dataset::AddNegSam(int numOfSam){
 }
 void Dataset::initSamples()
 {
-	calculateNpdTable();
+    calculateNpdTable();
+
     cout<<"Prepare postive samples"<<endl;
-	readImage(p_images, para.numPosSample, pfile, 0);
+    readImage(p_images, para.numPosSample, pfile, 0);
     cout<<"The number of postvie samples is "<<p_images.size()<<endl;
 
     cout<<"Prepare negtive samples"<<endl;
-	readImage(n_images, p_images.size() * para.negRatio, nfile,1);
-        cout<<"The number of negtive samples is "<<n_images.size()<<endl;
+    readImage(n_images, p_images.size() * para.negRatio, nfile,1);
+    cout<<"The number of negtive samples is "<<n_images.size()<<endl;
 
-	calculateFea(pSam, p_images, p_images.size(),0);
+    calculateFea(pSam, p_images, p_images.size(),0);
     for(int i = 0; i < (int)pSam.rows; i++)
         pInd.push_back(i);
 

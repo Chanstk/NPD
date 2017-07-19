@@ -6,3 +6,4 @@ opencvlib/
 *.jpg
 *.xml
 *.out
+__*
