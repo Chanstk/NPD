@@ -245,12 +245,12 @@ void Dataset::AddNegSam(int numOfSam){
             nweight[i] = ((float)1) / a;
         }
     }
-    for(int i = 0; i < formNInd.size(); i++)
+    for(int i = 0; i <(int) formNInd.size(); i++)
         nweight[formNInd[i]] = a / (a + count);
     float sum = 0;
-    for(int i = 0; i < nInd.size(); i++)
+    for(int i = 0; i <(int) nInd.size(); i++)
         sum += nweight[nInd[i]];
-    for(int i = 0; i < nInd.size(); i++)
+    for(int i = 0; i <(int) nInd.size(); i++)
         nweight[nInd[i]] /= sum;
     cout<<"Bootstrap Done"<<endl;
     return;

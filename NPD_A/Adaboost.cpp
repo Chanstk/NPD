@@ -63,7 +63,7 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
             finished = true;
         }
         
-        if(weakClassifier.size() == T){
+        if((int)weakClassifier.size() == T){
             cout<<("\n\nNo effective features for further detector learning.\n");
             break;
         }
@@ -132,9 +132,9 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         }
         
         dataset.nPos = (int)dataset.pInd.size();
-        if (dataset.pInd.size() < nPos) {
+        if ((int)dataset.pInd.size() < nPos) {
             cout << "Warning: some positive samples cannot pass all stages. pass rate is "
-            << ((dataset.pInd.size())/(double)(nPos)) << endl;
+            << ((double)dataset.pInd.size()/(double)(nPos)) << endl;
         }
 
         //测试负样本
@@ -150,9 +150,9 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         }
         
         dataset.nNeg = (int)dataset.nInd.size();
-        if (nNeg > dataset.nInd.size()) {
+        if (nNeg > (int)dataset.nInd.size()) {
             cout << "Warning: some negative samples cannot pass all stages, pass rate is "
-            << ((dataset.nInd.size())/(double)(nNeg)) << endl;
+            << ((double)(dataset.nInd.size())/(double)(nNeg)) << endl;
         }
         //重新计算样本权值        
         dataset.CalcuWeight();
@@ -160,8 +160,8 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
     }
     if(T==0)
         dataset.initWeight(nPos, nNeg);
-    int primNegNumber = dataset.nNeg; 
-    int nNegPass = dataset.nNeg;
+    //int primNegNumber = dataset.nNeg; 
+   // int nNegPass = dataset.nNeg;
     for(int t = T; t < para.max_stage; t++){
         if(dataset.nNeg <= para.minSamples){
             cout << endl << "No enough negative samples. The Adaboost learning terninates at iteration "
@@ -185,8 +185,8 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         random_shuffle(negIndex.begin(), negIndex.end());
         negIndex.resize(nNegSam);
         //TODO
-		cout<<"Before trim the num of posIndex is "<<posIndex.size()<<endl;
-		cout<<"Before trim the num of negIndex is "<<negIndex.size()<<endl;
+		cout<<"Before trim the num of posIndex is "<<(int)posIndex.size()<<endl;
+		cout<<"Before trim the num of negIndex is "<<(int)negIndex.size()<<endl;
         dataset.TrimWeight(posIndex, negIndex);
         nPosSam = (int)posIndex.size();
         nNegSam = (int)negIndex.size();
@@ -215,13 +215,13 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
 
         //dataset.nInd.swap(temNegPassIndex);
         //dataset.nNeg = (int)dataset.nInd.size();
-        tree->FAR = (float)(temNegPassIndex.size() * 1.0 / nNegPass);
+        tree->FAR = (float)((int)temNegPassIndex.size() * 1.0 / dataset.nNeg);
         cout<<"The FAR of this tree is "<<tree->FAR * 100<<"%"<<endl;
-		nNegPass = temNegPassIndex.size();
+		//nNegPass = (int)temNegPassIndex.size();
         tree->SaveTree(para.modelName, t);
         weakClassifier.push_back(tree);
         double FAR = 1;
-        for (int i = 0; i < weakClassifier.size(); i++)
+        for (int i = 0; i <(int) weakClassifier.size(); i++)
             FAR *= weakClassifier[i]->FAR;
         
         cout<<"FAR at " <<t<<" stage is "<<FAR * 100<<"%"<<endl;

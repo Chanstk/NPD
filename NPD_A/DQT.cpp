@@ -21,9 +21,9 @@ void DQT::Init_tree(vector<int>& pInd,
           vector<int>& nInd,
           int minLeaf){
     this->root = new xNode();
-    for(int i = 0; i < pInd.size(); i++)
+    for(int i = 0; i <(int) pInd.size(); i++)
         root->pInd.push_back(pInd[i]);
-    for(int i = 0; i < nInd.size(); i++)
+    for(int i = 0; i <(int) nInd.size(); i++)
         root->nInd.push_back(nInd[i]);
     root->Init(0, minLeaf);
     root->level = 1;

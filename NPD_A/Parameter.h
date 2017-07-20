@@ -1,5 +1,6 @@
 #ifndef PARAMETER_H
 #include <iostream>
+#include "pugixml.hpp"
 #define PARAMETER_H
 
 class Parameter {
