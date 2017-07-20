@@ -259,19 +259,20 @@ void Dataset::initSamples()
 {
     calculateNpdTable();
 
+	int randomSelect = 0;
     cout<<"Prepare postive samples"<<endl;
     readImage(p_images, para.numPosSample, pfile, 0);
     cout<<"The number of postvie samples is "<<p_images.size()<<endl;
 
     cout<<"Prepare negtive samples"<<endl;
-    readImage(n_images, p_images.size() * para.negRatio, nfile,1);
+    readImage(n_images, p_images.size() * para.negRatio, nfile,randomSelect);
     cout<<"The number of negtive samples is "<<n_images.size()<<endl;
 
     calculateFea(pSam, p_images, p_images.size(),0);
     for(int i = 0; i < (int)pSam.rows; i++)
         pInd.push_back(i);
 
-    calculateFea(nSam, n_images, p_images.size() * para.negRatio,1);
+    calculateFea(nSam, n_images, p_images.size() * para.negRatio,randomSelect);
     for(int i = 0; i < (int)nSam.rows; i++)
         nInd.push_back(i);
 
