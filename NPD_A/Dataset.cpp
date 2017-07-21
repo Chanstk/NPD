@@ -37,6 +37,14 @@ void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName
 	   }
         images.push_back(image);
         count++;
+		//flip picture
+		if(!neg){
+			cv::Mat f_image;
+			cv::flip(image, f_image, 1);
+			images.push_back(f_image);
+			count++;
+		}
+
         if(count >= num_of_sams){
             cout<<"The picture has been already enough"<<endl;
             break;
@@ -259,7 +267,7 @@ void Dataset::initSamples()
 {
     calculateNpdTable();
 
-	int randomSelect = 0;
+	int randomSelect = 1;
     cout<<"Prepare postive samples"<<endl;
     readImage(p_images, para.numPosSample, pfile, 0);
     cout<<"The number of postvie samples is "<<p_images.size()<<endl;
