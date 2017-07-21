@@ -38,7 +38,7 @@ void Dataset::readImage(vector<cv::Mat>& images, int num_of_sams, char *fileName
         images.push_back(image);
         count++;
 		//flip picture
-		if(!neg){
+		if(false){
 			cv::Mat f_image;
 			cv::flip(image, f_image, 1);
 			images.push_back(f_image);

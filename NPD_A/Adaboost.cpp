@@ -116,7 +116,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
     vector<double> posFit, negFit;
     vector<int> passCount;
     int T = (int)weakClassifier.size();
-    if(false){
+    if(T > 0){
         cout<<"Test current model"<<endl;
         //测试样本， dataset里面将未经过测试的样本剔除
         //测试正样本
@@ -162,7 +162,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
     if(T==0)
         dataset.initWeight(nPos, nNeg);
     //int primNegNumber = dataset.nNeg; 
-   // int nNegPass = dataset.nNeg;
+    int nNegPass = dataset.nNeg;
     for(int t = T; t < para.max_stage; t++){
         if(dataset.nNeg <= para.minSamples){
             cout << endl << "No enough negative samples. The Adaboost learning terninates at iteration "
@@ -214,11 +214,11 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
                 temNegPassIndex.push_back(dataset.nInd[i]);
         }
 
-        //dataset.nInd.swap(temNegPassIndex);
-        //dataset.nNeg = (int)dataset.nInd.size();
-        tree->FAR = (float)((int)temNegPassIndex.size() * 1.0 / dataset.nNeg);
+        dataset.nInd.swap(temNegPassIndex);
+        dataset.nNeg = (int)dataset.nInd.size();
+        tree->FAR = (float)(dataset.nNeg * 1.0 / nNegPass);
         cout<<"The FAR of this tree is "<<tree->FAR * 100<<"%"<<endl;
-		//nNegPass = (int)temNegPassIndex.size();
+		nNegPass = (int)dataset.nInd.size();
         tree->SaveTree(para.modelName, t);
         weakClassifier.push_back(tree);
         double FAR = 1;
@@ -230,10 +230,10 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             printf("\n\nThe training is converged at iteration %d. FAR = %.2f%%\n", t, FAR * 100);
             break;
         }
-/*        if (nNegPass <= dataset.nPos * para.minNegRatio || nNegPass <= para.minSamples) {
+        if (nNegPass <= dataset.nPos * para.minNegRatio || nNegPass <= para.minSamples) {
             printf("\n\nNo enough negative samples. The AdaBoost learning terminates at iteration %d. nNegPass = %d.\n", t, nNegPass);
             break;
-        }*/
+        }
         dataset.CalcuWeight();
     }
     cout<<"The adaboost training is finished at inner cycle."<<endl;
