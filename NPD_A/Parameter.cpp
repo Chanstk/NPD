@@ -1,15 +1,15 @@
 #include"Parameter.h"
 
 void Parameter::paraDefine(){
-    MINDR = 1;
-    MAXFAR = 1e-7;
-    tree_level = 6;
+    MINDR = 0.99;
+    MAXFAR = 1e-4;
+    tree_level = 4;
     max_stage = 1000;
     obj_size = 20;
     finalNegs = 10000;
-    minSamples = 1000;
-    negRatio = 3 ; 
-    minNegRatio = 0.5;
+    minSamples = 1300;
+    negRatio = 2 ; 
+    minNegRatio = 0.3;
     trimFrac = 0.01;		// weight trimming in AdaBoost
     samFrac = 1;			// the fraction of samples randomly selected in each iteration
     // for training; could be used to avoid overfitting.

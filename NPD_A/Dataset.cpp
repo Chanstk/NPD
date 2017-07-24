@@ -84,10 +84,15 @@ void Dataset::calculateFea(Mat& sam, const vector<Mat>& images, const int& num,i
 		else{
 			//extract neg sample randomly
 			int rnd = rand() % (int) images.size();
-			int x = rand() % (images[rnd].cols - para.obj_size);
-			int y = rand() % (images[rnd].rows - para.obj_size);
-			img = images[rnd](Rect(x ,y ,para.obj_size, para.obj_size));
-/*			string a = "./te/";
+			Mat resizeImg ;
+			int sc = 1 + rand() % 5;
+			int re_Cols = images[rnd].cols / sc > para.obj_size?images[rnd].cols / sc  : para.obj_size;
+			int re_Rows = images[rnd].rows / sc > para.obj_size ?images[rnd].rows /sc :para.obj_size ;
+			resize(images[rnd], resizeImg, Size(re_Cols, re_Rows));
+			int x = rand() % (resizeImg.cols - para.obj_size);
+			int y = rand() % (resizeImg.rows - para.obj_size);
+			img = resizeImg(Rect(x ,y ,para.obj_size, para.obj_size));
+			/*string a = "./toCHen/";
 			string b = ".jpg";
 			string c = std::to_string(k);
 			string d = a + c + b;
@@ -236,14 +241,19 @@ void Dataset::AddNegSam(int numOfSam){
             int n = 0;
 	    //randomseletc neg pic
 			int rnd = rand() % (int) n_images.size();
-			int x = rand() % (n_images[rnd].cols - para.obj_size);
-			int y = rand() % (n_images[rnd].rows - para.obj_size);
-		 	cv::Mat im =n_images[rnd](Rect(x, y, para.obj_size, para.obj_size));	
-            
-			uchar* addr = im.data;
+		 	cv::Mat im =n_images[rnd];	
+            Mat resizeImg ;
+            int sc = 1 + rand() % 5;
+            int re_Cols = im.cols / sc > para.obj_size?im.cols / sc  : para.obj_size;
+            int re_Rows = im.rows / sc > para.obj_size ?im.rows /sc :para.obj_size ;
+            resize(im, resizeImg, Size(re_Cols, re_Rows));
+            int x = rand() % (resizeImg.cols - para.obj_size);
+            int y = rand() % (resizeImg.rows - para.obj_size);
+            Mat po = resizeImg(Rect(x ,y ,para.obj_size, para.obj_size)); 
+			uchar* addr = po.data;
             for (int k = 0; k < pixels; k++) {
                 //TODO
-                addr = im.data + k;
+                addr = po.data + k;
                 for (int j = k + 1; j < pixels; j++) {
                     nSam.at<uchar>(i, n++) = npdTable.at<uchar>(*addr, *(addr - k + j));
                 }
