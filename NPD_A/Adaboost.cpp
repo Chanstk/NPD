@@ -56,13 +56,13 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
             break;
         }
         
-        if (dataset.nNeg == desiredNumNegs)
+//        if (dataset.nNeg == desiredNumNegs)
             LearnAdaboost(dataset);
-        else{
-            para.negRatio = finalNegs / dataset.nSam.rows;
-            LearnAdaboost(dataset);
-            finished = true;
-        }
+  //      else{
+    //        para.negRatio = finalNegs / dataset.nSam.rows;
+      //      LearnAdaboost(dataset);
+        //    finished = true;
+       // }
         
         if((int)weakClassifier.size() == T){
             cout<<("\n\nNo effective features for further detector learning.\n");
@@ -116,7 +116,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
     vector<double> posFit, negFit;
     vector<int> passCount;
     int T = (int)weakClassifier.size();
-    if(T > 0){
+    if(false){
         cout<<"Test current model"<<endl;
         //测试样本， dataset里面将未经过测试的样本剔除
         //测试正样本
@@ -214,11 +214,11 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
                 temNegPassIndex.push_back(dataset.nInd[i]);
         }
 
-        dataset.nInd.swap(temNegPassIndex);
-        dataset.nNeg = (int)dataset.nInd.size();
-        tree->FAR = (float)(dataset.nNeg * 1.0 / nNegPass);
+        //dataset.nInd.swap(temNegPassIndex);
+       // dataset.nNeg = (int)dataset.nInd.size();
+        tree->FAR = (float)(temNegPassIndex.size() * 1.0 / nNegPass);
         cout<<"The FAR of this tree is "<<tree->FAR * 100<<"%"<<endl;
-		nNegPass = (int)dataset.nInd.size();
+		//nNegPass = (int)dataset.nInd.size();
         tree->SaveTree(para.modelName, t);
         weakClassifier.push_back(tree);
         double FAR = 1;

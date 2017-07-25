@@ -92,7 +92,7 @@ void Dataset::calculateFea(Mat& sam, const vector<Mat>& images, const int& num,i
 			int x = rand() % (resizeImg.cols - para.obj_size);
 			int y = rand() % (resizeImg.rows - para.obj_size);
 			img = resizeImg(Rect(x ,y ,para.obj_size, para.obj_size));
-			/*string a = "./toCHen/";
+			/*string a = "./toChen/";
 			string b = ".jpg";
 			string c = std::to_string(k);
 			string d = a + c + b;
