@@ -3,6 +3,7 @@ neg/
 pos/
 opencvlib/
 *.o
+*.zip
 *.jpg
 *.xml
 *.out
