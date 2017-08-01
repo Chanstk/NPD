@@ -6,7 +6,7 @@ void Parameter::paraDefine(){
     tree_level = 6;
     max_stage = 1000;
     obj_size = 20;
-    finalNegs = 5000;
+    finalNegs = 50000;
     minSamples = 1000;
     negRatio = 1.5 ; 
     minNegRatio = 0.3;
@@ -18,7 +18,7 @@ void Parameter::paraDefine(){
     minLeaf = 1000;			// minimal samples required in each leaf node.This is used to avoid overfitting.
     maxWeight = 100;		// maximal sample weight in AdaBoost; used to ensure numerical stability.
     numThreads = 10;		// the number of computing threads in tree learning
-    numPosSample = 20000;
+    numPosSample = 27000;
     modelName = "Tree.xml";
 	bootNum = 10000;
 	pugi::xml_document doc;

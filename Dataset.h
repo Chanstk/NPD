@@ -33,6 +33,9 @@ public:
 	void initWeight(int nPos, int nNeg);
 	void initSamples();
     void CalcuWeight();
+	unsigned char  GetFeatViaDim(int dim, int index, bool sign);
+	void GetFeat(int index, bool sign, vector<unsigned char> & featList);
+	void GetFeatViaDimPerPic(vector<int> & index, bool sign, vector<unsigned char> &featList);
     void AddNegSam(vector<DQT*>& weakClassifier,int numOfSam);
     void TrimWeight(vector<int>& posIndex, vector<int>& negIndex);
 };

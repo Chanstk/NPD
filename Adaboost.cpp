@@ -98,7 +98,7 @@ void Adaboost::TestAdaboost(vector<double>& Fx, vector<int>& passCount, cv::Mat&
             
             double fx = weakClassifier[j]->TestMyself(X.row(i));
             Fx[i] += fx;
-            if (Fx[i] >= weakClassifier[j]->threshold) {
+            if (!(Fx[i] < weakClassifier[j]->threshold)) {
                 passCount[i]++;
             }
             else {
