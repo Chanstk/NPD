@@ -295,7 +295,6 @@ void Dataset::AddNegSam(vector<DQT*>& weakClassifier,int numOfSam){
 				vector<Mat> rects;
 				SlideImage(rects, weakClassifier, bootPic, 0.05);  
 				int k = rects.size();
-				cout<<k<<" ";
 				picGridNums[sampleIndex[i]] = k;
 				if(k == 0) continue;
 				if( k > numLimitPerPic || k > numOfSam - n){
@@ -332,7 +331,6 @@ void Dataset::AddNegSam(vector<DQT*>& weakClassifier,int numOfSam){
 				vector<Mat> rects;
 				SlideImage(rects, weakClassifier, bootPic, 0.01);
 				int k = rects.size();
-				cout<<k<<" ";
 				picSlideNums[sampleIndex[i]] = k;
 				if(k ==0) continue;
 				if( k > numLimitPerPic || k > numOfSam - n){
@@ -369,7 +367,6 @@ void Dataset::AddNegSam(vector<DQT*>& weakClassifier,int numOfSam){
 				vector<Mat> rects;
 				SlideImage(rects, weakClassifier, bootPic, 0.01);
 				int k = rects.size();
-				cout<<k<<" ";
 				picSlideNums[sampleIndex[i]] = k;
 				if(k ==0) continue;
 				if(k > numOfSam - n){
@@ -477,8 +474,8 @@ void Dataset::initSamples()
 	readImage(bootImages, 3000, bootFile, 1);
 	cout<<"The number of boot samples is "<<bootImages.size()<<endl;
 	for(int i = 0 ; i <(int)bootImages.size(); i++){
-		picSlideNums.push_back(100000000);
-		picGridNums.push_back(100000000);
+		picSlideNums.push_back(10000);
+		picGridNums.push_back(10000);
 	}
 	//		calculateFea(pSam, p_images, p_images.size(),0);
 	cout<<"postive sample feature extraction done"<<endl;
