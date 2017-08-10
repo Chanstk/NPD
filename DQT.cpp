@@ -7,11 +7,11 @@
 //
 #include "Adaboost.h"
 extern Parameter para;
-void WeightHist(const cv::Mat& X, vector<float> W, vector<int>& index, int n, int count[256], double wHist[256]){
+void WeightHist(vector<unsigned char> & featList, vector<float> W, vector<int>& index, int n, int count[256], double wHist[256]){
     memset(wHist, 0, 256 * sizeof(double));
     
     for (int j = 0; j < n; j++){
-        unsigned char bin = X.ptr(index[j])[0];
+        unsigned char bin = featList[j];
         count[bin]++;
         wHist[bin] += W[index[j]];
     }
@@ -46,7 +46,7 @@ double xNode::SplitxNode(Dataset &dataset){
     minCost += w * (parentFit + 1) * (parentFit + 1);
     if (nPos == 0 || nNeg == 0 || nPos + nNeg < 2 * minLeaf)
         return minCost;
-    int feaDims = (int)dataset.pSam.cols;
+    int feaDims = para.featDim;
     
     minCost = 1e16f;
     //遍历特征
@@ -55,12 +55,15 @@ double xNode::SplitxNode(Dataset &dataset){
         int count[256];
         double posWhist[256];
         double negWhist[256];
-        
+        vector<unsigned char> SamFea; 
         memset(count, 0, 256 * sizeof(int));
-        
-        WeightHist(dataset.pSam.col(i), dataset.pweight, pInd, nPos, count, posWhist);
-        WeightHist(dataset.nSam.col(i), dataset.nweight, nInd, nNeg, count, negWhist);
-        
+
+		dataset.GetFeatViaDimPerPic(pInd, true, i, SamFea); 
+        WeightHist(SamFea, dataset.pweight, pInd, nPos, count, posWhist);
+		
+		vector<unsigned char> SamFea_neg;
+		dataset.GetFeatViaDimPerPic(nInd, false, i, SamFea_neg);
+        WeightHist(SamFea_neg, dataset.nweight, nInd, nNeg, count, negWhist);
         double posWSum = 0;
         double negWSum = 0;
         
@@ -145,8 +148,8 @@ double xNode::RecurLearn(Dataset & dataset){
     //达到最大树高
     if(this->level >= para.tree_level) return minCost;
     
-    float leftThr = this->threshold1;
-    float rightThr = this->threshold2;
+    double leftThr = this->threshold1;
+    double rightThr = this->threshold2;
     
     int nPos = (int)this->pInd.size();
     int nNeg = (int)this->nInd.size();
@@ -162,18 +165,24 @@ double xNode::RecurLearn(Dataset & dataset){
     rChild->ID = this->ID * 2 + 2;
     
     //正样本分入左右子树
-    for(int j = 0; j < nPos; j++)
-        if(dataset.pSam.at<uchar>(size_t(this->pInd[j]), size_t(this->featId))< leftThr || dataset.pSam.at<uchar>(size_t(this->pInd[j]), size_t(this->featId)) > rightThr)
+    for(int j = 0; j < nPos; j++){
+        //if(dataset.pSam.at<uchar>(size_t(this->pInd[j]), size_t(this->featId))< leftThr || dataset.pSam.at<uchar>(size_t(this->pInd[j]), size_t(this->featId)) > rightThr)
+		unsigned char value = dataset.GetFeatViaDim(this->featId, this->pInd[j], true);
+		if(value < leftThr || value > rightThr)
             lChild->pInd.push_back(this->pInd[j]);
         else
             rChild->pInd.push_back(this->pInd[j]);
+	}
     
     //负样本分入左右子树
-    for(int j = 0; j < nNeg; j++)
-        if(dataset.nSam.at<uchar>(size_t(this->nInd[j]), size_t(this->featId))< leftThr || dataset.nSam.at<uchar>(size_t(this->nInd[j]), size_t(this->featId)) > rightThr)
+    for(int j = 0; j < nNeg; j++){
+        //if(dataset.nSam.at<uchar>(size_t(this->nInd[j]), size_t(this->featId))< leftThr || dataset.nSam.at<uchar>(size_t(this->nInd[j]), size_t(this->featId)) > rightThr)
+		unsigned char value = dataset.GetFeatViaDim(this->featId, this->nInd[j], false);
+		if( value < leftThr || value > rightThr)
             lChild->nInd.push_back(this->nInd[j]);
         else
             rChild->nInd.push_back(this->nInd[j]);
+	}
 
     //左右子树递归
     double minCost1 = lChild->RecurLearn(dataset);
@@ -237,7 +246,7 @@ void DQT::ReleaseSpace(xNode *node){
     return ;
 }
 
-void xNode::Init(float parentFit, int minLeaf_){
+void xNode::Init(double parentFit, int minLeaf_){
     this->parentFit = parentFit;
     featId = -1;
     threshold1 = -1;
@@ -253,19 +262,18 @@ void DQT::CalcuThreshold(Dataset &dataset){
     vector<double> v;
     for (int i = 0; i < int(dataset.nPos); i++) {
         //POSFIT的trace TODO
-        dataset.posFit[dataset.pInd[i]] += this->TestMyself(dataset.pSam.row(dataset.pInd[i]));
+	vector<unsigned char> SamFea;
+	dataset.GetFeat(dataset.pInd[i],true, SamFea);
+        dataset.posFit[dataset.pInd[i]] += this->TestMyself(SamFea);
         v.push_back(dataset.posFit[dataset.pInd[i]]);
     }
     sort(v.begin(), v.end());
-    
-    cout<<endl;
     int index = max((int)floor(dataset.nPos*(1- para.MINDR)), 0);
     this->threshold = v[index];
 }
 
-double DQT::RecurTest(const cv::Mat& x, xNode * node){
-    unsigned char * ptr = x.data;
-    if(ptr[node->featId] < node->threshold1 || ptr[node->featId] > node->threshold2){
+double DQT::RecurTest(vector<unsigned char> & x, xNode * node){
+    if(x[node->featId] < node->threshold1 || x[node->featId] > node->threshold2){
         if(node->lChild == NULL)
             return node->leftFit;
         else
@@ -312,7 +320,7 @@ vector<xNode*> DQT::LinkxNodeToVec(){
     RecurAddxNode(vec, root);
     return vec;
 }
-double DQT::TestMyself(const cv::Mat& x){
+double DQT::TestMyself(vector<unsigned char> &x){
 	return RecurTest(x, this->root);
 }
 

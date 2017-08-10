@@ -9,9 +9,9 @@ OBJS = $(SRCS:.cpp=.o)
 	DLIBS = -lopencv_core -lopencv_imgcodecs -lopencv_imgproc -lopencv_highgui
 # 链接为可执行文件
 $(TARGET):$(OBJS)
-	$(CC) -o  $@ $^ $(DLIBS)  -O3 -funroll-loops -g
+	$(CC) -o  $@ $^ $(DLIBS) -O3 -funroll-loops  
 clean:
 	rm -rf $(TARGET) $(OBJS)
 # 编译规则 $@代表目标文件 $< 代表第一个依赖文件
 %.o:%.cpp
-	$(CC) -o $@ -c $< -Wall
+	$(CC) -o $@ -c $< -Wall -g

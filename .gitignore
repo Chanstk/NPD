@@ -3,4 +3,6 @@
 *.txt
 pos/
 neg/
+negMass/
+boot/
 *.zip

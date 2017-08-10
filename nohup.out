@@ -1,159 +1,27 @@
 Prepare postive samples
-empty file path:../pos/a
-empty file path:../pos/b
 The picture has been already enough
  done
-The number of postvie samples is 119000
+The number of postvie samples is 25000
 Prepare negtive samples
 The picture has been already enough
  done
-The number of negtive samples is 178500
+The number of negtive samples is 25000
+Prepare boot samples
+ done
+The number of boot samples is 2846
 postive sample feature extraction done
 negtive sample feature extaction done
 ***********************************
-Before trim the num of posIndex is 119000
-Before trim the num of negIndex is 178500
-The minLeaf at this stage is 2975
-Iter 0: nPos=119000, nNeg=178500, 
-The FAR of this tree is 100%
-This DQT contains 41 nodes
-FAR at 0 stage is 100%
+The minLeaf at this stage is 500
+Iter 0: nPos=25000, nNeg=25000, The FAR of this tree is 96.532%
+This DQT contains 23 nodes
+FAR at 0 stage is 96.532%
+25000 0.2 24133
 ***********************************
-Before trim the num of posIndex is 119000
-Before trim the num of negIndex is 178500
-The minLeaf at this stage is 2975
-Iter 1: nPos=119000, nNeg=178500, 
-The FAR of this tree is 61.0387%
-This DQT contains 41 nodes
-FAR at 1 stage is 61.0387%
+The minLeaf at this stage is 491
+Iter 1: nPos=25000, nNeg=24133, The FAR of this tree is 89.1186%
+This DQT contains 24 nodes
+FAR at 1 stage is 86.028%
+25000 0.2 21507
 ***********************************
-Before trim the num of posIndex is 119000
-Before trim the num of negIndex is 108954
-The minLeaf at this stage is 2252
-Iter 2: nPos=119000, nNeg=106191, 
-The FAR of this tree is 95.2026%
-This DQT contains 41 nodes
-FAR at 2 stage is 58.1104%
-***********************************
-Before trim the num of posIndex is 119000
-Before trim the num of negIndex is 103727
-The minLeaf at this stage is 2175
-Iter 3: nPos=119000, nNeg=98510, 
-The FAR of this tree is 99.8573%
-This DQT contains 50 nodes
-FAR at 3 stage is 58.0275%
-***********************************
-Before trim the num of posIndex is 119000
-Before trim the num of negIndex is 103579
-The minLeaf at this stage is 2075
-Iter 4: nPos=112290, nNeg=95174, 
-The FAR of this tree is 87.3613%
-This DQT contains 47 nodes
-FAR at 4 stage is 50.6936%
-***********************************
-Before trim the num of posIndex is 119000
-Before trim the num of negIndex is 90488
-The minLeaf at this stage is 1946
-Iter 5: nPos=113665, nNeg=80917, 
-The FAR of this tree is 65.454%
-This DQT contains 55 nodes
-FAR at 5 stage is 33.181%
-***********************************
-Before trim the num of posIndex is 119000
-Before trim the num of negIndex is 59228
-The minLeaf at this stage is 1405
-Iter 6: nPos=85900, nNeg=54619, 
-The FAR of this tree is 62.3202%
-This DQT contains 55 nodes
-FAR at 6 stage is 20.6784%
-***********************************
-Before trim the num of posIndex is 119000
-Before trim the num of negIndex is 36911
-The minLeaf at this stage is 1117
-Iter 7: nPos=76980, nNeg=34686, 
-The FAR of this tree is 80.1604%
-This DQT contains 58 nodes
-FAR at 7 stage is 16.5759%
-
-
-No enough negative samples. The AdaBoost learning terminates at iteration 7. nNegPass = 29588.
-The adaboost training is finished at inner cycle.
-Weak classifier 8 FAR: 0.165759
-Bootstrap negtive samples
-start at point 178500file name./neg/1503994.jpg
-Bootstrap Done
-After bootstrap :178500
-Test current model
-Warning: some positive samples cannot pass all stages. pass rate is 0.999924
-***********************************
-Before trim the num of posIndex is 118991
-Before trim the num of negIndex is 178500
-The minLeaf at this stage is 2304
-Iter 8: nPos=67471, nNeg=162928, 
-The FAR of this tree is 54.1978%
-This DQT contains 66 nodes
-FAR at 8 stage is 8.98377%
-***********************************
-Before trim the num of posIndex is 118991
-Before trim the num of negIndex is 96743
-The minLeaf at this stage is 1505
-Iter 9: nPos=59607, nNeg=90883, 
-The FAR of this tree is 85.7902%
-This DQT contains 60 nodes
-FAR at 9 stage is 7.70719%
-***********************************
-Before trim the num of posIndex is 118991
-Before trim the num of negIndex is 82996
-The minLeaf at this stage is 1345
-Iter 10: nPos=57136, nNeg=77324, 
-The FAR of this tree is 56.8955%
-This DQT contains 62 nodes
-FAR at 10 stage is 4.38505%
-***********************************
-Before trim the num of posIndex is 118991
-Before trim the num of negIndex is 47221
-The minLeaf at this stage is 1000
-Iter 11: nPos=52704, nNeg=44886, 
-The FAR of this tree is 74.1577%
-This DQT contains 64 nodes
-FAR at 11 stage is 3.25185%
-
-
-No enough negative samples. The AdaBoost learning terminates at iteration 11. nNegPass = 35018.
-The adaboost training is finished at inner cycle.
-Weak classifier 12 FAR: 0.0325185
-Bootstrap negtive samples
-start at point 1068064file name./neg/44512108.jpg
-Bootstrap Done
-After bootstrap :172710
-Test current model
-Warning: some positive samples cannot pass all stages. pass rate is 0.999908
-Warning: some negative samples cannot pass all stages, pass rate is 0.967563
-***********************************
-Before trim the num of posIndex is 118989
-Before trim the num of negIndex is 172710
-The minLeaf at this stage is 2094
-Iter 12: nPos=47363, nNeg=162059, 
-The FAR of this tree is 82.3924%
-This DQT contains 52 nodes
-FAR at 12 stage is 2.67928%
-***********************************
-Before trim the num of posIndex is 118989
-Before trim the num of negIndex is 142300
-The minLeaf at this stage is 1770
-Iter 13: nPos=43777, nNeg=133210, 
-The FAR of this tree is 82.298%
-This DQT contains 70 nodes
-FAR at 13 stage is 2.20499%
-***********************************
-Before trim the num of posIndex is 118989
-Before trim the num of negIndex is 117110
-The minLeaf at this stage is 1506
-Iter 14: nPos=40790, nNeg=109819, 
-The FAR of this tree is 80.0803%
-This DQT contains 68 nodes
-FAR at 14 stage is 1.76576%
-***********************************
-Before trim the num of posIndex is 118989
-Before trim the num of negIndex is 93782
-The minLeaf at this stage is 1255
+The minLeaf at this stage is 463

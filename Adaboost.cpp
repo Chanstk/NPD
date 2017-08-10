@@ -57,7 +57,7 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
 //        if (dataset.nNeg == desiredNumNegs)
             LearnAdaboost(dataset);
   //      else{
-    //        para.negRatio = finalNegs / dataset.nSam.rows;
+    //        para.minNegRatio = para.finalNegs / dataset.nNeg;
       //      LearnAdaboost(dataset);
         //    finished = true;
        // }
@@ -85,31 +85,34 @@ void Adaboost::TrainFaceDector(Dataset &dataset){
         }
     }
 }
-void Adaboost::TestAdaboost(vector<double>& Fx, vector<int>& passCount, cv::Mat& X){
-    int n = X.rows;
+void Adaboost::TestAdaboost(Dataset & dataset, vector<double>& Fx, vector<int>& passCount, bool sign, int num){
+	int n = num;
+
     Fx.clear();
     passCount.clear();
     Fx.resize(n);
     passCount.resize(n);
     for (int i = 0; i < n; i++) {	//for each image
         bool run = true;
-        
+        passCount[i] = 0; 
+	vector<unsigned char> SamFeat;
+	dataset.GetFeat(i, sign, SamFeat);
         for (int j = 0; j < int(weakClassifier.size()) && run; j++) {	//for each weak classifier
-            
-            double fx = weakClassifier[j]->TestMyself(X.row(i));
+            double fx = weakClassifier[j]->TestMyself(SamFeat);
             Fx[i] += fx;
             if (!(Fx[i] < weakClassifier[j]->threshold)) {
                 passCount[i]++;
             }
             else {
+//		cout<<Fx[i]<<" : "<<weakClassifier[j]->threshold<<" ";
                 run = false;
             }
         }
     }
 }
 void Adaboost::LearnAdaboost(Dataset &dataset){
-    int nPos = dataset.pSam.rows;
-    int nNeg = dataset.nSam.rows;
+    int nPos = dataset.nPos;
+    int nNeg = dataset.nNeg;
     vector<double> posFit, negFit;
     vector<int> passCount;
     int T = (int)weakClassifier.size();
@@ -120,7 +123,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         dataset.pInd.clear();
         dataset.posFit.clear();
         dataset.posFit.resize(nPos);
-        TestAdaboost(posFit, passCount, dataset.pSam);
+        TestAdaboost(dataset, posFit, passCount, true, nPos);
         for (int i = 0; i < int(passCount.size()); i++) {
             if (passCount[i] == T) {
                 //通过测试的正样本
@@ -134,12 +137,11 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             cout << "Warning: some positive samples cannot pass all stages. pass rate is "
             << ((double)dataset.pInd.size()/(double)(nPos)) << endl;
         }
-
         //测试负样本
         dataset.nInd.clear();
         dataset.negFit.clear();
         dataset.negFit.resize(nNeg);
-        TestAdaboost(negFit, passCount, dataset.nSam);
+        TestAdaboost(dataset, negFit, passCount, false, nNeg);
         for (int i = 0; i < int(passCount.size()); i++) {
             if (passCount[i] == T) {
                 dataset.nInd.push_back(i);
@@ -160,6 +162,7 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         dataset.initWeight(nPos, nNeg);
     //int primNegNumber = dataset.nNeg; 
     int nNegPass = dataset.nNeg;
+    int p = dataset.nPos;
     for(int t = T; t < para.max_stage; t++){
         if(dataset.nNeg <= para.minSamples){
             cout << endl << "No enough negative samples. The Adaboost learning terninates at iteration "
@@ -182,9 +185,6 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             negIndex[i] = dataset.nInd[i];
         random_shuffle(negIndex.begin(), negIndex.end());
         negIndex.resize(nNegSam);
-        //TODO
-		cout<<"Before trim the num of posIndex is "<<(int)posIndex.size()<<endl;
-		cout<<"Before trim the num of negIndex is "<<(int)negIndex.size()<<endl;
         dataset.TrimWeight(posIndex, negIndex);
         nPosSam = (int)posIndex.size();
         nNegSam = (int)negIndex.size();
@@ -206,18 +206,21 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
         
         vector<int> temNegPassIndex;
         for (int i = 0; i < int(dataset.nNeg); i++){
-            dataset.negFit[dataset.nInd[i]] += tree->TestMyself(dataset.nSam.row(dataset.nInd[i]));
+			vector<unsigned char> SamFeat;
+			dataset.GetFeat(dataset.nInd[i], false, SamFeat);
+            dataset.negFit[dataset.nInd[i]] += tree->TestMyself(SamFeat);
             if(dataset.negFit[dataset.nInd[i]] >= tree->threshold)
                 temNegPassIndex.push_back(dataset.nInd[i]);
         }
 
         dataset.nInd.swap(temNegPassIndex);
         dataset.nNeg = (int)dataset.nInd.size();
-        tree->FAR = (float)(dataset.nNeg * 1.0 / nNegPass);
+        tree->FAR = (double)(dataset.nNeg * 1.0 / nNegPass);
         cout<<"The FAR of this tree is "<<tree->FAR * 100<<"%"<<endl;
-		nNegPass = (int)dataset.nInd.size();
+	nNegPass = (int)dataset.nInd.size();
         tree->SaveTree(para.modelName, t);
         weakClassifier.push_back(tree);
+	dataset.CalcuWeight();
         double FAR = 1;
         for (int i = 0; i <(int) weakClassifier.size(); i++)
             FAR *= weakClassifier[i]->FAR;
@@ -227,11 +230,11 @@ void Adaboost::LearnAdaboost(Dataset &dataset){
             printf("\n\nThe training is converged at iteration %d. FAR = %.2f%%\n", t, FAR * 100);
             break;
         }
-        if (nNegPass <= dataset.nPos * para.minNegRatio || nNegPass <= para.minSamples) {
+	cout<<dataset.nPos<<" "<<para.minNegRatio<<" "<<nNegPass<<endl;
+        if (nNegPass <= p * para.minNegRatio || nNegPass <= para.minSamples) {
             printf("\n\nNo enough negative samples. The AdaBoost learning terminates at iteration %d. nNegPass = %d.\n", t, nNegPass);
             break;
         }
-        dataset.CalcuWeight();
     }
     cout<<"The adaboost training is finished at inner cycle."<<endl;
 }

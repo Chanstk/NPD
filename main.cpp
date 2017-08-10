@@ -13,8 +13,8 @@ extern Parameter para = Parameter();
 int main(int argc, const char * argv[]) {
     para.paraDefine();
 	srand((int)time(0));
-	omp_set_num_threads(4);
-    Dataset dataset("a", "neg.txt", "boot.txt");
+	omp_set_num_threads(6);
+    Dataset dataset("pos.txt", "neg.txt", "boot.txt");
     dataset.initSamples();
     Adaboost *adaboost = new Adaboost();
     adaboost->TrainFaceDector(dataset);

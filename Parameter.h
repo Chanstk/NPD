@@ -10,6 +10,7 @@ class Parameter {
 	int tree_level;
 	int max_stage;
 	int obj_size;
+	int featDim;
     int finalNegs;
     int minSamples;
     float negRatio;
